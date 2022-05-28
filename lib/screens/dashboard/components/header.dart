@@ -60,8 +60,7 @@ class ProfileCard extends StatelessWidget {
           ),
           if (!Responsive.isMobile(context))
             const Padding(
-              padding:
-                  EdgeInsets.symmetric(horizontal: defaultPadding / 2),
+              padding: EdgeInsets.symmetric(horizontal: defaultPadding / 2),
               child: Text("Angelina Jolie"),
             ),
           const Icon(Icons.keyboard_arrow_down),
