@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:fdb_manager/models/Status.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+
+import 'data/status_history.dart';
 
 class AgentApi {
   final String baseUrl;
@@ -38,6 +41,8 @@ class InstantStatusProvider with ChangeNotifier {
     });
   }
 
+  StatusHistory get history => _history;
+
   Future<InstantStatus> statusInstant() async {
     if (_cache != null) {
       return _cache!;
@@ -54,59 +59,4 @@ class InstantStatusProvider with ChangeNotifier {
     notifyListeners();
     return _cache;
   }
-}
-
-class InstantStatus {
-  final dynamic _data;
-
-  InstantStatus(this._data);
-
-  dynamic get raw => _data;
-
-  ProcessInfo? getProcessByID(String processID) {
-    final processes = _data['cluster']['processes'];
-    final process = processes[processID];
-    if (process == null) {
-      return null;
-    }
-    return ProcessInfo(process);
-  }
-
-  Map<String, List<ProcessRoleInfo>> roles() {
-    final Map<String, List<ProcessRoleInfo>> ret = {};
-    final processes = _data['cluster']['processes']
-        as Map<String, dynamic>; // key is processId
-    for (var procEntry in processes.entries) {
-      final processId = procEntry.key;
-      for (var roleObj in procEntry.value['roles'] as List<dynamic>) {
-        final roleType = roleObj['role'] as String;
-        final id = roleObj['id'] as String?;
-
-        ret.putIfAbsent(roleType, () => []);
-        ret[roleType]!.add(ProcessRoleInfo(roleType, processId, id, roleObj));
-      }
-    }
-    return ret;
-  }
-}
-
-class ProcessInfo {
-  final dynamic _data;
-
-  ProcessInfo(this._data);
-
-  String get address => _data['address'];
-}
-
-class ProcessRoleInfo {
-  final String? id;
-  final String type;
-  final String processId;
-  final dynamic data;
-
-  ProcessRoleInfo(this.type, this.processId, this.id, this.data);
-}
-
-class StatusHistory {
-  void add(DateTime timestamp, dynamic data) {}
 }

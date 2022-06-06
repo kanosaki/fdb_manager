@@ -3,6 +3,7 @@ import 'package:fdb_manager/constants.dart';
 import 'package:fdb_manager/controllers/MenuController.dart';
 import 'package:fdb_manager/screens/dashboard/dashboard_screen.dart';
 import 'package:fdb_manager/screens/main/main_screen.dart';
+import 'package:fdb_manager/screens/process_detail/process_details_screen.dart';
 import 'package:fdb_manager/screens/processes/processes_screen.dart';
 import 'package:fdb_manager/screens/roles/roles_screen.dart';
 import 'package:flutter/material.dart';
@@ -37,9 +38,10 @@ class MyApp extends StatelessWidget {
           //       .apply(bodyColor: Colors.white),
           //   canvasColor: secondaryColor,
           // ),
-          initialRoute: '/',
+          initialRoute: '/processes',
           routes: {
             '/processes': (context) => const MainScreen(ProcessesScreen()),
+            '/process/details': (context) => const MainScreen(ProcessDetailsScreen()),
             '/roles': (context) => const MainScreen(RolesScreen()),
             '/': (context) => const MainScreen(DashboardScreen()),
           },

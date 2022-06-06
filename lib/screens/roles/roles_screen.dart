@@ -1,7 +1,11 @@
+import 'package:fdb_manager/models/Status.dart';
+import 'package:fdb_manager/util/units.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 import '../../agent_api.dart';
+import '../../data/status_history.dart';
 
 class RolesScreen extends StatefulWidget {
   const RolesScreen({Key? key}) : super(key: key);
@@ -17,28 +21,102 @@ class _RolesScreenState extends State<RolesScreen> {
     context.read<InstantStatusProvider>().updatePeriodic();
   }
 
-  Widget buildRoleLog(InstantStatus status,List<ProcessRoleInfo> pris) {
-    return const Text('');
-  }
+  Widget buildRowForRole(StatusHistory history, InstantStatus status,
+      String roleType, List<ProcessRoleInfo> pris) {
+    Widget buildRoleLog() {
+      return const Text('');
+    }
 
-  Widget buildRoleProxy(InstantStatus status,List<ProcessRoleInfo> pris) {
-    return const Text('');
-  }
+    Widget buildRoleProxy() {
+      return const Text('');
+    }
 
-  Widget buildRoleStorage(InstantStatus status,List<ProcessRoleInfo> pris) {
-    return const Text('');
-  }
+    Widget buildRoleDefault() {
+      return Column(
+        children: pris.map((e) {
+          final process = status.getProcessByID(e.processId)!;
+          return Text(process.address);
+        }).toList(),
+      );
+    }
 
-  Widget buildRoleDefault(InstantStatus status, List<ProcessRoleInfo> pris) {
-    return Column(
-      children: pris.map((e) {
-        final process = status.getProcessByID(e.processId)!;
-        return Text(process.address);
-      }).toList(),
-    );
-  }
+    Widget buildRoleStorage() {
+      final now = DateTime.now();
+      const length = Duration(minutes: 5);
+      final layout = charts.LayoutConfig(
+        topMarginSpec: charts.MarginSpec.fixedPixel(10),
+        bottomMarginSpec: charts.MarginSpec.fixedPixel(15),
+        leftMarginSpec: charts.MarginSpec.fromPixel(minPixel: 20, maxPixel: 50),
+        rightMarginSpec: charts.MarginSpec.fixedPixel(10),
+      );
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: pris.map((e) {
+          var keysQueriedSeries = history.series('id', now, length, [
+            'cluster',
+            'processes',
+            e.processId,
+            'roles',
+            'storage',
+            'keys_queried',
+            'hz'
+          ]);
+          var mutationsSeries = history.series('id', now, length, [
+            'cluster',
+            'processes',
+            e.processId,
+            'roles',
+            'storage',
+            'mutations',
+            'hz'
+          ]);
+          var latencyMedianSeries = history.series('id', now, length, [
+            'cluster',
+            'processes',
+            e.processId,
+            'roles',
+            'storage',
+            'read_latency_statistics',
+            'median'
+          ]);
+          var latency99Series = history.series('id', now, length, [
+            'cluster',
+            'processes',
+            e.processId,
+            'roles',
+            'storage',
+            'read_latency_statistics',
+            'p99'
+          ]);
+          var queryCountChart = charts.TimeSeriesChart(
+              [keysQueriedSeries, mutationsSeries],
+              animate: false, layoutConfig: layout);
+          var latencyChart = charts.TimeSeriesChart(
+            [latencyMedianSeries, latency99Series],
+            animate: false,
+            layoutConfig: layout,
+            primaryMeasureAxis: charts.NumericAxisSpec(
+              tickProviderSpec: const charts.BasicNumericTickProviderSpec(
+                  dataIsInWholeNumbers: false),
+              tickFormatterSpec: charts.BasicNumericTickFormatterSpec((measure) => measure == null ? '' : '${measure*1000}ms'),
+            ),
+          );
+          final process = status.getProcessByID(e.processId)!;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                  '${process.address} available=${intToBytesStr(e.data['kvstore_available_bytes'])}'),
+              Row(children: [
+                SizedBox(child: queryCountChart, width: 200, height: 70),
+                SizedBox(child: latencyChart, width: 200, height: 70),
+              ]),
+            ],
+          );
+        }).toList(),
+      );
+    }
 
-  Widget buildRowForRole(InstantStatus status, String roleType, List<ProcessRoleInfo> pris) {
     final builders = {
       'coordinator': buildRoleDefault,
       'ratekeeper': buildRoleDefault,
@@ -57,7 +135,7 @@ class _RolesScreenState extends State<RolesScreen> {
         children: [Text(roleType)],
       );
     }
-    final content = builder(status, pris);
+    final content = builder();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -79,6 +157,7 @@ class _RolesScreenState extends State<RolesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final history = context.read<InstantStatusProvider>().history;
     final fut = context.watch<InstantStatusProvider>().statusInstant();
     return FutureBuilder<InstantStatus>(
         future: fut,
@@ -107,7 +186,7 @@ class _RolesScreenState extends State<RolesScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Divider(),
-                    buildRowForRole(status, entry.key, entry.value),
+                    buildRowForRole(history, status, entry.key, entry.value),
                   ],
                 );
               });

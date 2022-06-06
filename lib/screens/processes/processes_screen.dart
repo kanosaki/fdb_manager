@@ -1,11 +1,14 @@
 import 'dart:ffi';
 import 'dart:math';
 
+import 'package:data_table_2/data_table_2.dart';
 import 'package:fdb_manager/agent_api.dart';
+import 'package:fdb_manager/models/Status.dart';
 import 'package:fdb_manager/responsive.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:fdb_manager/util/units.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:provider/provider.dart';
 
 import '../../constants.dart';
@@ -40,20 +43,6 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
 
   String formatPercentage(double value) {
     return '${(value * 100).toStringAsFixed(2)}%';
-  }
-
-  String intToBytesStr(int size) {
-    var tmpSize = size;
-    const suffixes = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'EiB'];
-    var i = 0;
-    for (; i < suffixes.length; i++) {
-      if (tmpSize < 1024) {
-        break;
-      }
-      tmpSize ~/= 1024;
-    }
-    final fpSize = size / pow(1024, i);
-    return '${fpSize.toStringAsPrecision(4)}${suffixes[i]}';
   }
 
   String aggregateRoles(List<dynamic> roles) {
@@ -173,7 +162,9 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final history = context.read<InstantStatusProvider>().history;
     final fut = context.watch<InstantStatusProvider>().statusInstant();
+
     return FutureBuilder<InstantStatus>(
       future: fut,
       builder: (context, snapshot) {
@@ -183,8 +174,7 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
         }
         final raw = status.raw;
 
-        final available =
-            raw['client']['database_status']['available'] as bool;
+        final available = raw['client']['database_status']['available'] as bool;
         if (!available) {
           return const SafeArea(
             child: Text('Agent is not connected to cluster'),
@@ -193,21 +183,99 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
 
         final cluster = raw['cluster'] as Map<String, dynamic>;
         final processes = cluster['processes'] as Map<String, dynamic>;
+        final now = DateTime.now();
+        const historyLength = Duration(minutes: 5);
 
-        final procEntries = processes.entries.toList();
-        final processList = ListView.builder(
-            itemCount: procEntries.length,
-            itemBuilder: (context, index) {
-              final entry = procEntries.elementAt(index);
-              return buildRowForProcess(entry.key, entry.value);
-            });
+        final layout = charts.LayoutConfig(
+          topMarginSpec: charts.MarginSpec.fixedPixel(10),
+          bottomMarginSpec: charts.MarginSpec.fixedPixel(15),
+          leftMarginSpec:
+              charts.MarginSpec.fromPixel(minPixel: 20, maxPixel: 50),
+          rightMarginSpec: charts.MarginSpec.fixedPixel(10),
+        );
+
+        final processTable = DataTable2(
+          columns: const [
+            DataColumn2(label: Text('Address')),
+            DataColumn2(label: Text('Roles')),
+            DataColumn2(label: Text('CPU')),
+            DataColumn2(label: Text('Disk')),
+            DataColumn2(label: Text('Net')),
+          ],
+          rows: processes.entries.map((e) {
+            var cpuUsageHistory = history.series('id', now, historyLength, [
+              'cluster',
+              'processes',
+              e.key,
+              'cpu',
+              'usage_cores',
+            ]);
+            var diskReadsHistory = history.series('id', now, historyLength, [
+              'cluster',
+              'processes',
+              e.key,
+              'disk',
+              'reads',
+              'hz',
+            ]);
+            var diskWritesHistory = history.series('id', now, historyLength, [
+              'cluster',
+              'processes',
+              e.key,
+              'disk',
+              'reads',
+              'hz',
+            ]);
+            var netSentMbpsHistory = history.series('id', now, historyLength, [
+              'cluster',
+              'processes',
+              e.key,
+              'network',
+              'megabits_sent',
+              'hz',
+            ]);
+            var netReceivedMbpsHistory =
+                history.series('id', now, historyLength, [
+              'cluster',
+              'processes',
+              e.key,
+              'network',
+              'megabits_sent',
+              'hz',
+            ]);
+            var cpuUsageChart = charts.TimeSeriesChart([cpuUsageHistory],
+                animate: false, layoutConfig: layout);
+            var diskUsageChart = charts.TimeSeriesChart(
+                [diskReadsHistory, diskWritesHistory],
+                animate: false, layoutConfig: layout);
+            var netUsageChart = charts.TimeSeriesChart(
+                [netReceivedMbpsHistory, netSentMbpsHistory],
+                animate: false, layoutConfig: layout);
+            void onTap() {
+              Navigator.pushNamed(context, '/process/details', arguments: e.key);
+            }
+
+            return DataRow(cells: [
+              DataCell(Text(e.value['address']), onTap: onTap),
+              DataCell(Text(aggregateRoles(e.value['roles']))),
+              DataCell(cpuUsageChart),
+              DataCell(diskUsageChart),
+              DataCell(netUsageChart),
+            ]);
+          }).toList(),
+          horizontalMargin: 5,
+          columnSpacing: 5,
+          dataRowHeight: 50,
+          headingRowHeight: 20,
+          sortColumnIndex: 0,
+        );
         var bodyRowItems = [
           Expanded(
               flex: _selectedProcess == null ? 1 : 2,
               child: Container(
                 margin: const EdgeInsets.symmetric(
                     horizontal: defaultPadding, vertical: defaultPadding / 2),
-                child: processList,
+                child: processTable,
               )),
         ];
         if (_selectedProcess != null) {
