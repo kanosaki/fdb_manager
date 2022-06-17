@@ -1,4 +1,4 @@
-import 'package:fdb_manager/models/Status.dart';
+import 'package:fdb_manager/models/status.dart';
 import 'package:fdb_manager/util/units.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -98,7 +98,8 @@ class _RolesScreenState extends State<RolesScreen> {
             primaryMeasureAxis: charts.NumericAxisSpec(
               tickProviderSpec: const charts.BasicNumericTickProviderSpec(
                   dataIsInWholeNumbers: false),
-              tickFormatterSpec: charts.BasicNumericTickFormatterSpec((measure) => measure == null ? '' : '${measure*1000}ms'),
+              tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
+                  (measure) => measure == null ? '' : '${measure * 1000}ms'),
             ),
           );
           final process = status.getProcessByID(e.processId)!;
@@ -106,7 +107,7 @@ class _RolesScreenState extends State<RolesScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                  '${process.address} available=${intToBytesStr(e.data['kvstore_available_bytes'])}'),
+                  '${process.address} available=${numToBytesStr(e.data['kvstore_available_bytes'])}'),
               Row(children: [
                 SizedBox(child: queryCountChart, width: 200, height: 70),
                 SizedBox(child: latencyChart, width: 200, height: 70),
@@ -191,17 +192,18 @@ class _RolesScreenState extends State<RolesScreen> {
                 );
               });
 
-          return SafeArea(
+          return Expanded(
             child: Column(
               children: [
                 buildClusterHeader(cluster),
                 Expanded(
-                    child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: rolesList),
-                  ],
-                )),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: rolesList),
+                    ],
+                  ),
+                ),
               ],
             ),
           );

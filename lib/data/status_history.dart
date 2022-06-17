@@ -1,7 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
-import '../models/Status.dart';
+import '../models/status.dart';
 
 class HistoryEntry {
   DateTime timestamp;

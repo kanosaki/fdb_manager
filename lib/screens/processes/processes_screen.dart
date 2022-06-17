@@ -3,7 +3,8 @@ import 'dart:math';
 
 import 'package:data_table_2/data_table_2.dart';
 import 'package:fdb_manager/agent_api.dart';
-import 'package:fdb_manager/models/Status.dart';
+import 'package:fdb_manager/components/process/basic_charts.dart';
+import 'package:fdb_manager/models/status.dart';
 import 'package:fdb_manager/responsive.dart';
 import 'package:fdb_manager/util/units.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +70,7 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
       Text(data['address']),
       Text(aggregateRoles(data['roles'])),
       Text(formatPercentage(cpuUsage)),
-      Text(intToBytesStr(memAvailable)),
+      Text(numToBytesStr(memAvailable)),
       Text(
           'Tx: ${(data['network']['megabits_sent']['hz'] as double).toStringAsFixed(2)}Mbps'),
       Text(
@@ -96,15 +97,6 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
         ),
       ],
     );
-  }
-
-  Widget buildClusterHeader(Map<String, dynamic> cluster) {
-    final ccTimestamp = cluster['cluster_controller_timestamp'] as int;
-    return Row(children: [
-      Text(DateTime.fromMillisecondsSinceEpoch(ccTimestamp * 1000, isUtc: true)
-          .toLocal()
-          .toString())
-    ]);
   }
 
   String _printDuration(Object secondsObj) {
@@ -162,7 +154,6 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final history = context.read<InstantStatusProvider>().history;
     final fut = context.watch<InstantStatusProvider>().statusInstant();
 
     return FutureBuilder<InstantStatus>(
@@ -183,16 +174,6 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
 
         final cluster = raw['cluster'] as Map<String, dynamic>;
         final processes = cluster['processes'] as Map<String, dynamic>;
-        final now = DateTime.now();
-        const historyLength = Duration(minutes: 5);
-
-        final layout = charts.LayoutConfig(
-          topMarginSpec: charts.MarginSpec.fixedPixel(10),
-          bottomMarginSpec: charts.MarginSpec.fixedPixel(15),
-          leftMarginSpec:
-              charts.MarginSpec.fromPixel(minPixel: 20, maxPixel: 50),
-          rightMarginSpec: charts.MarginSpec.fixedPixel(10),
-        );
 
         final processTable = DataTable2(
           columns: const [
@@ -203,64 +184,31 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
             DataColumn2(label: Text('Net')),
           ],
           rows: processes.entries.map((e) {
-            var cpuUsageHistory = history.series('id', now, historyLength, [
-              'cluster',
-              'processes',
-              e.key,
-              'cpu',
-              'usage_cores',
-            ]);
-            var diskReadsHistory = history.series('id', now, historyLength, [
-              'cluster',
-              'processes',
-              e.key,
-              'disk',
-              'reads',
-              'hz',
-            ]);
-            var diskWritesHistory = history.series('id', now, historyLength, [
-              'cluster',
-              'processes',
-              e.key,
-              'disk',
-              'reads',
-              'hz',
-            ]);
-            var netSentMbpsHistory = history.series('id', now, historyLength, [
-              'cluster',
-              'processes',
-              e.key,
-              'network',
-              'megabits_sent',
-              'hz',
-            ]);
-            var netReceivedMbpsHistory =
-                history.series('id', now, historyLength, [
-              'cluster',
-              'processes',
-              e.key,
-              'network',
-              'megabits_sent',
-              'hz',
-            ]);
-            var cpuUsageChart = charts.TimeSeriesChart([cpuUsageHistory],
-                animate: false, layoutConfig: layout);
-            var diskUsageChart = charts.TimeSeriesChart(
-                [diskReadsHistory, diskWritesHistory],
-                animate: false, layoutConfig: layout);
-            var netUsageChart = charts.TimeSeriesChart(
-                [netReceivedMbpsHistory, netSentMbpsHistory],
-                animate: false, layoutConfig: layout);
             void onTap() {
-              Navigator.pushNamed(context, '/process/details', arguments: e.key);
+              Navigator.pushNamed(context, '/process/details',
+                  arguments: e.key);
             }
+
+            const width = 200.0;
+            const height = 50.0;
 
             return DataRow(cells: [
               DataCell(Text(e.value['address']), onTap: onTap),
               DataCell(Text(aggregateRoles(e.value['roles']))),
-              DataCell(cpuUsageChart),
-              DataCell(diskUsageChart),
-              DataCell(netUsageChart),
+              DataCell(
+                SizedBox(
+                    height: height, width: width, child: CPUUsageChart(e.key)),
+              ),
+              DataCell(
+                SizedBox(
+                    height: height, width: width, child: DiskUsageChart(e.key)),
+              ),
+              DataCell(
+                SizedBox(
+                    height: height,
+                    width: width,
+                    child: NetworkUsageChart(e.key)),
+              ),
             ]);
           }).toList(),
           horizontalMargin: 5,
@@ -287,15 +235,14 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
           );
         }
         // TODO: Use LayoutBuilder to make it responsive
-        return SafeArea(
+        return Expanded(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildClusterHeader(cluster),
-              Expanded(
-                  child: Row(
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: bodyRowItems,
-              )),
+              ),
             ],
           ),
         );

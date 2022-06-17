@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:fdb_manager/models/Status.dart';
+import 'package:fdb_manager/models/status.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 

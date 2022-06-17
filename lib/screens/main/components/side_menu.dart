@@ -11,14 +11,14 @@ class SideMenu extends StatelessWidget {
     return Drawer(
       child: ListView(
         children: [
-          DrawerHeader(
-            child: Image.asset("assets/images/logo.png"),
-          ),
+          // DrawerHeader(
+          //   child: Image.asset("assets/images/logo.png"),
+          // ),
           DrawerListTile(
-            title: "Home",
-            svgSrc: "assets/icons/menu_dashbord.svg",
+            title: "Overview",
+            svgSrc: "assets/icons/menu_task.svg",
             press: () {
-              Navigator.pushNamed(context, '/');
+              Navigator.pushNamed(context, '/overview');
             },
           ),
           DrawerListTile(
@@ -35,31 +35,34 @@ class SideMenu extends StatelessWidget {
               Navigator.pushNamed(context, '/roles');
             },
           ),
-          // DrawerListTile(
-          //   title: "Documents",
-          //   svgSrc: "assets/icons/menu_doc.svg",
-          //   press: () {},
-          // ),
-          // DrawerListTile(
-          //   title: "Store",
-          //   svgSrc: "assets/icons/menu_store.svg",
-          //   press: () {},
-          // ),
-          // DrawerListTile(
-          //   title: "Notification",
-          //   svgSrc: "assets/icons/menu_notification.svg",
-          //   press: () {},
-          // ),
-          // DrawerListTile(
-          //   title: "Profile",
-          //   svgSrc: "assets/icons/menu_profile.svg",
-          //   press: () {},
-          // ),
-          // DrawerListTile(
-          //   title: "Settings",
-          //   svgSrc: "assets/icons/menu_setting.svg",
-          //   press: () {},
-          // ),
+          DrawerListSubTile(
+            title: "Storage",
+            svgSrc: "assets/icons/menu_task.svg",
+            press: () {
+              Navigator.pushNamed(context, '/roles');
+            },
+          ),
+          DrawerListSubTile(
+            title: "Logs",
+            svgSrc: "assets/icons/menu_task.svg",
+            press: () {
+              Navigator.pushNamed(context, '/roles');
+            },
+          ),
+          DrawerListSubTile(
+            title: "Proxy",
+            svgSrc: "assets/icons/menu_task.svg",
+            press: () {
+              Navigator.pushNamed(context, '/roles');
+            },
+          ),
+          DrawerListTile(
+            title: "Region",
+            svgSrc: "assets/icons/menu_task.svg",
+            press: () {
+              Navigator.pushNamed(context, '/roles');
+            },
+          ),
         ],
       ),
     );
@@ -81,6 +84,9 @@ class DrawerListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      visualDensity: const VisualDensity(
+          horizontal: VisualDensity.minimumDensity,
+          vertical: VisualDensity.minimumDensity),
       onTap: press,
       horizontalTitleGap: 0.0,
       leading: SvgPicture.asset(
@@ -90,6 +96,36 @@ class DrawerListTile extends StatelessWidget {
       title: Text(
         title,
       ),
+    );
+  }
+}
+
+class DrawerListSubTile extends StatelessWidget {
+  const DrawerListSubTile({
+    Key? key,
+    // For selecting those three line once press "Command+D"
+    required this.title,
+    required this.svgSrc,
+    required this.press,
+  }) : super(key: key);
+
+  final String title, svgSrc;
+  final VoidCallback press;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      onTap: press,
+      horizontalTitleGap: 0.0,
+      visualDensity: const VisualDensity(
+          horizontal: VisualDensity.minimumDensity,
+          vertical: VisualDensity.minimumDensity),
+      dense: true,
+      title: Padding(
+          padding: const EdgeInsets.only(left: 50),
+          child: Text(
+            title,
+          )),
     );
   }
 }
