@@ -63,8 +63,8 @@ class _HeadlineState extends State<Headline> {
                     width: 100,
                     child: ReadWriteRateChart(
                       layout: charts.LayoutConfig(
-                        topMarginSpec: charts.MarginSpec.fixedPixel(5),
-                        bottomMarginSpec: charts.MarginSpec.fixedPixel(5),
+                        topMarginSpec: charts.MarginSpec.fixedPixel(10),
+                        bottomMarginSpec: charts.MarginSpec.fixedPixel(10),
                         leftMarginSpec: charts.MarginSpec.fixedPixel(5),
                         rightMarginSpec: charts.MarginSpec.fixedPixel(5),
                       ),
