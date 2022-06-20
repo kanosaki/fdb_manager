@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"net/http"
 
 	"github.com/apple/foundationdb/bindings/go/src/fdb"
@@ -8,7 +9,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var (
+	routePrefix = flag.String("routePrefix", "", "mount http routes on this path")
+)
+
 func main() {
+	flag.Parse()
 	fdb.MustAPIVersion(630)
 	db, err := fdb.OpenDefault()
 	if err != nil {
@@ -26,7 +32,9 @@ func main() {
 		c.String(http.StatusOK, "ok")
 	})
 
-	r.GET("/v1/status/now", func(c *gin.Context) {
+	g := r.Group(*routePrefix)
+
+	g.GET("/v1/status/now", func(c *gin.Context) {
 		statusJsonIface, err := db.ReadTransact(func(tx fdb.ReadTransaction) (interface{}, error) {
 			v, err := tx.Get(fdb.Key("\xff\xff/status/json")).Get()
 			if err != nil {
