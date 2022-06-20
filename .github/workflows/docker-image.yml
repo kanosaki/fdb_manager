@@ -31,7 +31,7 @@ jobs:
     - name: Build and push Docker images
       uses: docker/build-push-action@v3.0.0
       with:
-        context: "{{defaultContext}}#main:agent"
+        context: "https://github.com/${{ github.repository }}.git#${{ github.sha }}:agent"
         cache-from: type=gha
         cache-to: type=gha,mode=max
         push: true
