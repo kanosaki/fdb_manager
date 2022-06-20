@@ -15,6 +15,17 @@ func main() {
 		log.Fatalf("failed to open FoundationDB: %+v", err)
 	}
 	r := gin.Default()
+
+	// readiness probe
+	r.GET("/ready", func(c *gin.Context) {
+		c.String(http.StatusOK, "ok")
+	})
+
+	// liveness probe
+	r.GET("/healthz", func(c *gin.Context) {
+		c.String(http.StatusOK, "ok")
+	})
+
 	r.GET("/v1/status/now", func(c *gin.Context) {
 		statusJsonIface, err := db.ReadTransact(func(tx fdb.ReadTransaction) (interface{}, error) {
 			v, err := tx.Get(fdb.Key("\xff\xff/status/json")).Get()

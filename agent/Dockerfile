@@ -19,4 +19,4 @@ COPY --from=build_container /app/fdb_manager_agent ./
 COPY --from=build_container /usr/lib/libfdb_c.so /usr/lib/
 # NOTE: make client library directory and setup multiversion client?
 
-CMD ['/app/fdb_manager_agent']
+ENTRYPOINT ['/app/fdb_manager_agent']
