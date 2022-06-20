@@ -10,7 +10,7 @@ COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 
 COPY . .
-RUN go build -v -o fdb_manager_agnet ./...
+RUN go build -v -o fdb_manager_agent ./...
 
 FROM gcr.io/distroless/base
 
