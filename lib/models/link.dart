@@ -15,7 +15,7 @@ class RichString {
       } else if (e is RichStringElement) {
         return e;
       } else {
-        throw Exception('Invalid Link element ${e.toString()}');
+        throw Exception('Invalid Link element ${e.toString()}(${e.runtimeType})');
       }
     }).toList());
     return ret;

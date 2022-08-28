@@ -20,18 +20,24 @@ class HistorySeriesEntry {
 class StatusHistory {
   final List<HistoryEntry> _history = [];
   final int capacity = 1000;
+  HistoryEntry? _latest;
 
-  StatusHistory() {
-    var db = openDatabase('fdb_manager.db',
-        version: 1, onCreate: (Database db, int version) {});
+  StatusHistory();
+
+  void clear() {
+    _history.clear();
   }
 
   void add(DateTime timestamp, dynamic data) {
     if (_history.length >= capacity) {
       _history.removeAt(0);
     }
-    _history.add(HistoryEntry(timestamp, data));
+    final he = HistoryEntry(timestamp, data);
+    _history.add(he);
+    _latest = he;
   }
+
+  HistoryEntry? get latest => _latest;
 
   charts.Series<dynamic, DateTime> series(
       String id, DateTime timestamp, Duration length, List<String> path) {
@@ -41,10 +47,12 @@ class StatusHistory {
     var endIndex =
         _history.lastIndexWhere((e) => e.timestamp.isBefore(timestamp));
 
-    final data = _history
-        .getRange(beginIndex, endIndex)
-        .map((e) => HistorySeriesEntry(e.timestamp, selectByPath(e, path)))
-        .toList();
+    final data = beginIndex < 0 || endIndex < 0
+        ? []
+        : _history
+            .getRange(beginIndex, endIndex)
+            .map((e) => HistorySeriesEntry(e.timestamp, selectByPath(e, path)))
+            .toList();
 
     return charts.Series(
       id: id,

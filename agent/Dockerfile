@@ -1,6 +1,6 @@
 FROM golang:latest AS build_container
 
-ARG fdb_version=6.3.24
+ARG fdb_version=7.1.19
 
 WORKDIR /app
 RUN curl -LOJ https://github.com/apple/foundationdb/releases/download/${fdb_version}/foundationdb-clients_${fdb_version}-1_amd64.deb

@@ -1,3 +1,4 @@
+import 'package:fdb_manager/components/charts/cluster_scope.dart';
 import 'package:fdb_manager/components/metric_bar.dart';
 import 'package:fdb_manager/data/status_history.dart';
 import 'package:fdb_manager/models/link.dart';
@@ -20,19 +21,15 @@ class ClusterOverview extends StatefulWidget {
 class _ClusterOverviewState extends State<ClusterOverview> {
   Widget buildPermanentStatuses(Map<String, dynamic> cluster) {
     final ccTimestamp = cluster['cluster_controller_timestamp'] as int;
-    final bytesRead = cluster['workload']['bytes']['read']['hz'] as num;
-    final bytesWritten = cluster['workload']['bytes']['written']['hz'] as num;
-    final keysRead = cluster['workload']['keys']['read']['hz'] as num;
-    final txCommitted =
-        cluster['workload']['transactions']['committed']['hz'] as num;
-    final txConflicted =
-        cluster['workload']['transactions']['conflicted']['hz'] as num;
 
     final avgPartitionSize =
-        cluster['data']['average_partition_size_bytes'] as num;
-    final partitionCount = cluster['data']['partitions_count'] as num;
-    final totalKVSize = cluster['data']['total_kv_size_bytes'] as num;
-    final totalDiskUsed = cluster['data']['total_disk_used_bytes'] as num;
+        cluster['data']['average_partition_size_bytes'] as num?;
+    final partitionCount = cluster['data']['partitions_count'] as num?;
+    final totalKVSize = cluster['data']['total_kv_size_bytes'] as num?;
+    final totalDiskUsed = cluster['data']['total_disk_used_bytes'] as num?;
+    // final leastTLDiskRemaining = cluster['data']['least_operating_space_bytes_log_server'] as num?;
+    // final leastSSDiskRemaining = cluster['data']['least_operating_space_bytes_storage_server'] as num?;
+    final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,45 +41,84 @@ class _ClusterOverviewState extends State<ClusterOverview> {
                     isUtc: true)
                 .toLocal()
                 .toString()),
-            const Padding(
-                padding: EdgeInsets.all(4),
-                child: SizedBox(width: 100, height: 20, child: MetricBar())),
+          ],
+        ),
+        // Row(
+        //   crossAxisAlignment: CrossAxisAlignment.start,
+        //   children: [
+        //     Expanded(
+        //       child: Padding(padding: EdgeInsets.all(4), child: SizedBox(height: 20, child: MetricBar(
+        //         text: 'TotalKV: ${numToBytesStr(totalKVSize ?? 0)} / TotalDisk: ${numToBytesStr(totalDiskUsed ?? 0)}',
+        //         ratio: ,
+        //       ))),
+        //     ),
+        //   ],
+        // ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+                '${intToSuffixedStr(partitionCount ?? 0)}partitions x ${numToBytesStr(avgPartitionSize ?? 0)}'),
           ],
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-                'R: ${numToBytesStr(bytesRead)}/s / W: ${numToBytesStr(bytesWritten)}/s'),
+                'TotalKV: ${numToBytesStr(totalKVSize ?? 0)} / TotalDisk: ${numToBytesStr(totalDiskUsed ?? 0)}'),
           ],
         ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('KeyRead: ${intToSuffixedStr(keysRead)}hz'),
-          ],
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-                'Commit: ${intToSuffixedStr(txCommitted)}hz / Conflict: ${intToSuffixedStr(txConflicted)}hz'),
-          ],
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-                '${intToSuffixedStr(partitionCount)}partitions x ${numToBytesStr(avgPartitionSize)}'),
-          ],
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-                'TotalKV: ${numToBytesStr(totalKVSize)} / TotalDisk: ${numToBytesStr(totalDiskUsed)}'),
-          ],
-        ),
+        const Divider(),
+        Row(children: [
+          Expanded(
+            flex: 1,
+            child: Column(children: [
+              Text('Latency Probe', style: theme.textTheme.subtitle1),
+              SizedBox(height: 100, child: LatencyProbeChart(showLegend: true)),
+            ]),
+          ),
+          Expanded(
+            flex: 1,
+            child: Column(children: [
+              Text('Read/Write rate', style: theme.textTheme.subtitle1),
+              SizedBox(
+                  height: 100, child: ReadWriteRateChart(showLegend: true)),
+            ]),
+          ),
+        ]),
+        Row(children: [
+          Expanded(
+            flex: 1,
+            child: Column(children: [
+              Text('Transaction', style: theme.textTheme.subtitle1),
+              SizedBox(
+                  height: 100, child: TransactionRateChart(showLegend: true)),
+            ]),
+          ),
+          Expanded(
+            flex: 1,
+            child: Column(children: [
+              Text('QoS', style: theme.textTheme.subtitle1),
+              SizedBox(height: 100, child: QoSStateChart(showLegend: true)),
+            ]),
+          ),
+        ]),
+        Row(children: [
+          Expanded(
+            flex: 1,
+            child: Column(children: [
+              Text('DC lag', style: theme.textTheme.subtitle1),
+              SizedBox(height: 100, child: LagChart(showLegend: true)),
+            ]),
+          ),
+          Expanded(
+            flex: 1,
+            child: Column(children: [
+              Text('Moving data', style: theme.textTheme.subtitle1),
+              SizedBox(height: 100, child: MovingDataChart(showLegend: true)),
+            ]),
+          ),
+        ]),
       ],
     );
   }

@@ -109,7 +109,7 @@ class ReadWriteRateChart extends TimeSeriesChartBase {
 
   @override
   charts.NumericAxisSpec? primaryAxisSpec(
-      BuildContext context, charts.Color? preferredColor) {
+      BuildContext context, charts.Color? preferredColor, num? max) {
     return charts.NumericAxisSpec(
       tickProviderSpec: const charts.BasicNumericTickProviderSpec(
           dataIsInWholeNumbers: false),

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
 import '../../agent_api.dart';
+import '../charts/format.dart';
 import '../charts/time_series.dart';
 
 class CPUUsageChart extends TimeSeriesChartBase {
@@ -23,6 +24,37 @@ class CPUUsageChart extends TimeSeriesChartBase {
         'usage_cores',
       ])
     ];
+  }
+}
+
+class MemoryUsageChart extends TimeSeriesChartBase {
+  MemoryUsageChart(this.processID,
+      {Key? key, charts.LayoutConfig? layout, Duration? span, bool? showLegend})
+      : super(key: key, layout: layout, span: span, showLegend: showLegend);
+
+  final String processID;
+
+  @override
+  Iterable<ChartSeries> series() {
+    return [
+      ChartSeries(name: 'available', path: [
+        'cluster',
+        'processes',
+        processID,
+        'memory',
+        'available_bytes',
+      ])
+    ];
+  }
+
+  @override
+  charts.NumericAxisSpec? primaryAxisSpec(
+      BuildContext context, charts.Color? preferredColor, num? max) {
+    return dynamicLabelAxisSpec(
+      context,
+      preferredColor,
+      formatCapacity(max),
+    );
   }
 }
 
@@ -68,22 +100,12 @@ class NetworkUsageChart extends TimeSeriesChartBase {
 
   @override
   charts.NumericAxisSpec? primaryAxisSpec(
-      BuildContext context, charts.Color? preferredColor) {
-    return charts.NumericAxisSpec(
-      tickProviderSpec: const charts.BasicNumericTickProviderSpec(
-        dataIsInWholeNumbers: false,
-      ),
-      tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
-        (measure) => measure == null ? '' : '${measure}Mbps',
-      ),
-      renderSpec: charts.GridlineRendererSpec(
-        lineStyle: charts.LineStyleSpec(color: preferredColor),
-        labelStyle: charts.TextStyleSpec(
-          fontSize: baseFontSize(),
-          color: preferredColor,
-        ),
-      ),
-    );
+      BuildContext context, charts.Color? preferredColor, num? max) {
+    return dynamicLabelAxisSpec(
+        context,
+        preferredColor,
+        formatterBaseFn(max, ['M', 'G', 'T', 'P'],
+            unit: 'bps', base: 1000));
   }
 
   final String processID;

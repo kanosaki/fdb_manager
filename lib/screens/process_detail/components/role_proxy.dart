@@ -30,7 +30,7 @@ class ProxyRole extends StatelessWidget {
 mixin _LatencyChartMixin on TimeSeriesChartBase {
   @override
   charts.NumericAxisSpec? primaryAxisSpec(
-      BuildContext context, charts.Color? preferredColor) {
+      BuildContext context, charts.Color? preferredColor, num? max) {
     return charts.NumericAxisSpec(
       tickProviderSpec: const charts.BasicNumericTickProviderSpec(
           dataIsInWholeNumbers: false),

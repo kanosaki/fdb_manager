@@ -1,0 +1,102 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /fdb_manager/agent/v1
+            pathType: Prefix
+            backend:
+              service:
+                name: fdb-manager-agent
+                port:
+                  number: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: fdb-manager-agent
+  name: fdb-manager-agent
+spec:
+  ports:
+    - port: 8080
+  selector:
+    app: fdb-manager-agent
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fdb-manager-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fdb-manager-agent
+  template:
+    metadata:
+      labels:
+        app: fdb-manager-agent
+      name: fdb-manager-agent
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - env:
+            - name: PORT
+              value: "8080"
+            - name: GIN_MODE
+              value: release
+            - name: FDB_CLUSTER_FILE
+              value: /var/dynamic-conf/fdb.cluster
+            - name: FDB_API_VERSION
+              value: "630"
+            - name: FDB_NETWORK_OPTION_TRACE_LOG_GROUP
+              value: test-cluster-client
+            - name: FDB_NETWORK_OPTION_EXTERNAL_CLIENT_DIRECTORY
+              value: /var/dynamic-conf/lib/multiversion
+            - name: LD_LIBRARY_PATH
+              value: /var/dynamic-conf/lib
+          image: kanosaki/fdb_manager_agent:latest
+          imagePullPolicy: Always
+          name: agent
+          command: ['/app/fdb_manager_agent']
+          args: ['-routePrefix', '/fdb_manager/agent']
+          resources:
+            limits:
+              cpu: 250m
+              memory: 128Mi
+            requests:
+              cpu: 250m
+              memory: 128Mi
+          volumeMounts:
+            - mountPath: /var/dynamic-conf
+              name: dynamic-conf
+      initContainers:
+        - args:
+            - --copy-file
+            - fdb.cluster
+#            - --copy-library
+#            - "6.2"
+            - --copy-library
+            - "6.3"
+            - --init-mode
+            - --require-not-empty
+            - fdb.cluster
+          image: foundationdb/foundationdb-kubernetes-sidecar:6.3.24-1
+          name: foundationdb-kubernetes-init
+          volumeMounts:
+            - mountPath: /var/input-files
+              name: config-map
+            - mountPath: /var/output-files
+              name: dynamic-conf
+      volumes:
+        - configMap:
+            items:
+              - key: cluster-file
+                path: fdb.cluster
+            name: test-cluster-config
+          name: config-map
+        - emptyDir: { }
+          name: dynamic-conf

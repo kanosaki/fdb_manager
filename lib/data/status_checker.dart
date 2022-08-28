@@ -107,6 +107,9 @@ class Threshold {
   Iterable<MetricIssue> check(
       String id, dynamic current, RichString note) sync* {
     double value;
+    if (current == null) {
+      return;
+    }
     if (current is num) {
       value = current.toDouble();
     } else {
@@ -210,7 +213,7 @@ class StatusValidator {
       return;
     }
     if (!obj['database_status']['healthy']) {
-      yield MessageIssue('client.database.not_healthy', IssueSeverity.fatal,
+      yield MessageIssue('client.database.not_healthy', IssueSeverity.warning,
           _srs('Database is not healthy'));
     }
     if (!obj['coordinators']['quorum_reachable']) {
@@ -223,14 +226,16 @@ class StatusValidator {
             'client.coordinator[${coord['address']}].unreachable',
             IssueSeverity.error,
             _rs([
-              'Coordinator',
+              'Coordinator ',
               ProcessAddressLink(coord['address']),
-              'is not reachable'
+              ' is not reachable'
             ]));
       }
     }
-    yield* (obj['messages'] as List<dynamic>).map(
-        (e) => MessageIssue('client.message', IssueSeverity.warning, _rs([e])));
+    yield* (obj['messages'] as List<dynamic>).map((e) => MessageIssue(
+        'client.message',
+        IssueSeverity.warning,
+        _rs(['client: ${e.toString()}'])));
     // TODO: check client timestamp?
   }
 
@@ -259,8 +264,10 @@ class StatusValidator {
       yield MessageIssue('cluster.full_replication', IssueSeverity.warning,
           _srs('Database not fully replicated'));
     }
-    yield* (obj['messages'] as List<dynamic>).map((e) =>
-        MessageIssue('cluster.message', IssueSeverity.warning, _rs([e])));
+    yield* (obj['messages'] as List<dynamic>).map((e) => MessageIssue(
+        'cluster.message',
+        IssueSeverity.warning,
+        _rs(['cluster: ${e['name']}: ${e['reasons'].toString()}'])));
     // TODO: check datacenter_lag
     yield* checkClusterClients(c, obj['clients']);
     yield* checkClusterConfiguration(c, obj['configuration']);
@@ -326,7 +333,7 @@ class StatusValidator {
       StatusValidatorContext c, String id, dynamic obj) sync* {
     yield* _c.processCPUUtilizationThresh.check(
         'cluster.process[$id].cpu.logical_core_utilization.high',
-        obj['cpu']['usage_cores'],
+        obj['cpu']?['usage_cores'] ?? 0,
         _rs([
           'Process(',
           ProcessLink(id),
@@ -341,7 +348,9 @@ class StatusValidator {
     }
     // TODO: check memory metrics
     yield* (obj['messages'] as List<dynamic>).map((e) => MessageIssue(
-        'cluster.process[$id].message', IssueSeverity.warning, _rs([e])));
+        'cluster.process[$id].message',
+        IssueSeverity.warning,
+        _rs([ProcessLink(id), ' ${e.toString()}'])));
     // TODO: check network
     for (final role in obj['roles']) {
       yield* checkClusterProcessRole(c, id, role);

@@ -88,10 +88,8 @@ class ProcessInfo {
 }
 
 double normalizeToDouble(dynamic v) {
-  if (v is int) {
+  if (v is num) {
     return v.toDouble();
-  } else if (v is double) {
-    return v;
   } else {
     throw Exception('not a double: ${v.toString()}');
   }

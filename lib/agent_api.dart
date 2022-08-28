@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
+import 'package:fdb_manager/controllers/database.dart';
 import 'package:fdb_manager/models/status.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -23,8 +25,12 @@ class AgentApi {
   }
 }
 
+class NotInitializedAgentApi extends AgentApi {
+  NotInitializedAgentApi() : super("", http.Client());
+}
+
 class InstantStatusProvider with ChangeNotifier {
-  final AgentApi api;
+  AgentApi api;
 
   InstantStatusProvider(this.api);
 
@@ -37,11 +43,20 @@ class InstantStatusProvider with ChangeNotifier {
       return;
     }
     _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (api.baseUrl == '') {
+        return;
+      }
       fetchStatusInstant();
     });
   }
 
   StatusHistory get history => _history;
+
+  switchCluster(AgentApi a) {
+    log("Switching API: ${a.baseUrl}");
+    api = a;
+    history.clear();
+  }
 
   Future<InstantStatus> statusInstant() async {
     if (_cache != null) {

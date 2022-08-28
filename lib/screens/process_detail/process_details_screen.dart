@@ -33,29 +33,54 @@ class _ProcessDetailsScreenState extends State<ProcessDetailsScreen> {
             return Text('Error: process $processId not found');
           }
           final theme = Theme.of(context);
-          List<Widget> children = [
-            Text('CPU', style: theme.textTheme.subtitle1),
-            SizedBox(
-                height: 100,
-                child: CPUUsageChart(
-                  processId,
-                  showLegend: true,
-                )),
-            Text('Disk', style: theme.textTheme.subtitle1),
-            SizedBox(
-                height: 100,
-                child: DiskUsageChart(
-                  processId,
-                  showLegend: true,
-                )),
-            Text('Network', style: theme.textTheme.subtitle1),
-            SizedBox(
-                height: 100,
-                child: NetworkUsageChart(
-                  processId,
-                  showLegend: true,
-                )),
+          List<Widget> coreMetrics = [
+            Text('Address: ${process.address}'),
+            Text('Excluded: ${process.excluded}'),
+            Text('Messages: ${process.messages.join(",")}'),
+            Text('Version: ${process.version}'),
+            Text('Uptime: ${process.uptime}'),
+            Row(children: [
+              Expanded(flex: 1, child: Column(children: [
+                Text('CPU', style: theme.textTheme.subtitle1),
+                SizedBox(
+                    height: 80,
+                    child: CPUUsageChart(
+                      processId,
+                      showLegend: true,
+                    )),
+              ])),
+              Expanded(flex: 1, child: Column(children: [
+                Text('Memory', style: theme.textTheme.subtitle1),
+                SizedBox(
+                    height: 80,
+                    child: MemoryUsageChart(
+                      processId,
+                      showLegend: true,
+                    )),
+              ])),
+            ]),
+            Row(children: [
+              Expanded(flex: 1, child: Column(children: [
+                Text('Disk', style: theme.textTheme.subtitle1),
+                SizedBox(
+                    height: 80,
+                    child: DiskUsageChart(
+                      processId,
+                      showLegend: true,
+                    )),
+              ])),
+              Expanded(flex: 1, child: Column(children: [
+                Text('Network', style: theme.textTheme.subtitle1),
+                SizedBox(
+                    height: 80,
+                    child: NetworkUsageChart(
+                      processId,
+                      showLegend: true,
+                    )),
+              ])),
+            ]),
           ];
+          List<Widget> children = [];
           final roles = status.getRoles(processId) ?? [];
           for (var role in roles) {
             switch (role.type) {
@@ -84,7 +109,8 @@ class _ProcessDetailsScreenState extends State<ProcessDetailsScreen> {
           }
           final sc = ScrollController();
 
-          return Expanded(child: Container(
+          return Expanded(
+              child: Container(
             margin: const EdgeInsets.all(10),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,13 +119,7 @@ class _ProcessDetailsScreenState extends State<ProcessDetailsScreen> {
                     flex: 1,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('Address: ${process.address}'),
-                        Text('Excluded: ${process.excluded}'),
-                        Text('Messages: ${process.messages.join(",")}'),
-                        Text('Version: ${process.version}'),
-                        Text('Uptime: ${process.uptime}'),
-                      ],
+                      children: coreMetrics,
                       crossAxisAlignment: CrossAxisAlignment.start,
                     )),
                 Expanded(

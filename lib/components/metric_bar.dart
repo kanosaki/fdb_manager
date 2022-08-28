@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 
 class MetricBar extends StatelessWidget {
-  const MetricBar({Key? key}) : super(key: key);
+  const MetricBar({Key? key, this.text = '', this.palette, required this.ratio, this.watermark}) : super(key: key);
+
+  final double ratio;
+  final double? watermark;
+  final String text;
+  final MetricBarPalette? palette;
 
   @override
   Widget build(BuildContext context) {
-    final palette = MetricBarPalette();
+    final pal = palette ?? MetricBarPalette();
     return CustomPaint(
-        painter: MetricBarPainter(palette.ok, '100Mbps', 0.7,
-            watermark: 0.8, watermarkColor: palette.warn));
+        painter: MetricBarPainter(pal.ok, text, ratio,
+            watermark: watermark, watermarkColor: pal.warn));
   }
 }
 

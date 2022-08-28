@@ -13,11 +13,32 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final nav = Navigator.of(context);
     return Scaffold(
       // key: context.read<MenuController>().scaffoldKey,
       drawer: const SideMenu(),
       appBar: AppBar(
         elevation: 0,
+        leading: Builder(builder: (BuildContext context) {
+          return Row(children: [
+            IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+            ),
+            IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: nav.canPop()
+                  ? () {
+                      nav.pop();
+                    }
+                  : null,
+            ),
+          ]);
+        }),
+        leadingWidth: 100,
         actions: const [
           Headline(),
         ],
