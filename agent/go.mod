@@ -3,7 +3,7 @@ module github.com/kanosaki/fdb_manager/agent
 go 1.18
 
 require (
-	github.com/apple/foundationdb/bindings/go v0.0.0-20220328172940-3dd44747d981
+	github.com/apple/foundationdb/bindings/go v0.0.0-20220826213606-5685f03b5ae3
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/sirupsen/logrus v1.8.1
@@ -26,7 +26,7 @@ require (
 	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110 // indirect
 	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad // indirect
 	golang.org/x/text v0.3.6 // indirect
-	golang.org/x/xerrors v0.0.0-20220411194840-2f41105eb62f // indirect
+	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
