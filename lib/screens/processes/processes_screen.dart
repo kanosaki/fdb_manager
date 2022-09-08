@@ -68,7 +68,8 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
             SizedBox(height: height, width: width, child: CPUUsageChart(e.key)),
           ),
           DataCell(
-            SizedBox(height: height, width: width, child: MemoryUsageChart(e.key)),
+            SizedBox(
+                height: height, width: width, child: MemoryUsageChart(e.key)),
           ),
           DataCell(
             SizedBox(

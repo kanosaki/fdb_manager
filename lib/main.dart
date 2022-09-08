@@ -6,6 +6,7 @@ import 'package:fdb_manager/constants.dart';
 import 'package:fdb_manager/controllers/MenuController.dart';
 import 'package:fdb_manager/screens/cluster_overview/cluster_overview_screen.dart';
 import 'package:fdb_manager/screens/dashboard/dashboard_screen.dart';
+import 'package:fdb_manager/screens/locality/locality_screen.dart';
 import 'package:fdb_manager/screens/main/main_screen.dart';
 import 'package:fdb_manager/screens/process_detail/process_details_screen.dart';
 import 'package:fdb_manager/screens/processes/processes_screen.dart';
@@ -72,7 +73,7 @@ class _AppMainState extends State<AppMain> {
     final api = cc == null
         ? NotInitializedAgentApi()
         : AgentApi(cc.baseUrl, http.Client());
-    final initialRoute = cc == null ? '/connect' : '/processes';
+    final initialRoute = cc == null ? '/connect' : '/locality';
     final isp = InstantStatusProvider(api);
     cm.clusterChanged = (ci) => isp.switchCluster(ci == null
         ? NotInitializedAgentApi()
@@ -81,6 +82,7 @@ class _AppMainState extends State<AppMain> {
     final Map<String, WidgetBuilder> routes = {
       '/overview': (context) => const MainScreen(ClusterOverview()),
       '/processes': (context) => const MainScreen(ProcessesScreen()),
+      '/locality': (context) => const MainScreen(LocalityScreen()),
       '/process/details': (context) => const MainScreen(ProcessDetailsScreen()),
       '/roles': (context) => const MainScreen(RolesScreen()),
     };
