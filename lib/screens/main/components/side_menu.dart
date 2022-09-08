@@ -94,7 +94,7 @@ class SideMenu extends StatelessWidget {
             press: noCluster
                 ? null
                 : () {
-                    Navigator.pushNamed(context, '/roles');
+                    Navigator.pushNamed(context, '/locality');
                     Scaffold.of(context).closeDrawer();
                   },
           ),

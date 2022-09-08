@@ -40,44 +40,52 @@ class _ProcessDetailsScreenState extends State<ProcessDetailsScreen> {
             Text('Version: ${process.version}'),
             Text('Uptime: ${process.uptime}'),
             Row(children: [
-              Expanded(flex: 1, child: Column(children: [
-                Text('CPU', style: theme.textTheme.subtitle1),
-                SizedBox(
-                    height: 80,
-                    child: CPUUsageChart(
-                      processId,
-                      showLegend: true,
-                    )),
-              ])),
-              Expanded(flex: 1, child: Column(children: [
-                Text('Memory', style: theme.textTheme.subtitle1),
-                SizedBox(
-                    height: 80,
-                    child: MemoryUsageChart(
-                      processId,
-                      showLegend: true,
-                    )),
-              ])),
+              Expanded(
+                  flex: 1,
+                  child: Column(children: [
+                    Text('CPU', style: theme.textTheme.subtitle1),
+                    SizedBox(
+                        height: 80,
+                        child: CPUUsageChart(
+                          processId,
+                          showLegend: true,
+                        )),
+                  ])),
+              Expanded(
+                  flex: 1,
+                  child: Column(children: [
+                    Text('Memory', style: theme.textTheme.subtitle1),
+                    SizedBox(
+                        height: 80,
+                        child: MemoryUsageChart(
+                          processId,
+                          showLegend: true,
+                        )),
+                  ])),
             ]),
             Row(children: [
-              Expanded(flex: 1, child: Column(children: [
-                Text('Disk', style: theme.textTheme.subtitle1),
-                SizedBox(
-                    height: 80,
-                    child: DiskUsageChart(
-                      processId,
-                      showLegend: true,
-                    )),
-              ])),
-              Expanded(flex: 1, child: Column(children: [
-                Text('Network', style: theme.textTheme.subtitle1),
-                SizedBox(
-                    height: 80,
-                    child: NetworkUsageChart(
-                      processId,
-                      showLegend: true,
-                    )),
-              ])),
+              Expanded(
+                  flex: 1,
+                  child: Column(children: [
+                    Text('Disk', style: theme.textTheme.subtitle1),
+                    SizedBox(
+                        height: 80,
+                        child: DiskUsageChart(
+                          processId,
+                          showLegend: true,
+                        )),
+                  ])),
+              Expanded(
+                  flex: 1,
+                  child: Column(children: [
+                    Text('Network', style: theme.textTheme.subtitle1),
+                    SizedBox(
+                        height: 80,
+                        child: NetworkUsageChart(
+                          processId,
+                          showLegend: true,
+                        )),
+                  ])),
             ]),
           ];
           List<Widget> children = [];
@@ -109,8 +117,7 @@ class _ProcessDetailsScreenState extends State<ProcessDetailsScreen> {
           }
           final sc = ScrollController();
 
-          return Expanded(
-              child: Container(
+          return Container(
             margin: const EdgeInsets.all(10),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,7 +140,7 @@ class _ProcessDetailsScreenState extends State<ProcessDetailsScreen> {
                     )),
               ],
             ),
-          ));
+          );
         });
   }
 }

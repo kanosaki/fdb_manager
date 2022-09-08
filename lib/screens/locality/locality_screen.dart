@@ -33,36 +33,36 @@ class _LocalityScreenState extends State<LocalityScreen> {
 
   Widget machineWidget(InstantStatus status, ProcessByLocality locality,
       String machineID, List<ProcessInfo> processes) {
-    final procs = processes + processes + processes + processes;
-    return SizedBox(
-      height: 180,
+    return Container(
+      margin: const EdgeInsets.all(5),
+      decoration: BoxDecoration(border: Border.all(color: Colors.black)),
       child: Container(
         margin: const EdgeInsets.all(5),
-        decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-        child: Container(
-          margin: const EdgeInsets.all(5),
-          key: Key(machineID),
-          child: Row(
-            children: [
-              SizedBox(
-                width: 150,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('M: $machineID'),
-                  ],
-                ),
+        key: Key(machineID),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 120,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('M: $machineID'),
+                ],
               ),
-              Expanded(
+            ),
+            Expanded(
+              child: SizedBox(
+                width: 200,
+                height: 200,
                 child: GridView.extent(
-                    physics: const NeverScrollableScrollPhysics(),
+                    // physics: const NeverScrollableScrollPhysics(),
                     maxCrossAxisExtent: 200,
-                    children: procs
+                    children: processes
                         .map((e) => processWidget(status, locality, e))
                         .toList()),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -70,29 +70,22 @@ class _LocalityScreenState extends State<LocalityScreen> {
 
   Widget zoneWidget(InstantStatus status, ProcessByLocality locality,
       String zoneID, Map<String, List<ProcessInfo>> zone) {
-    final machines =
-        zone.entries.toList() + zone.entries.toList() + zone.entries.toList();
+    final machines = zone.entries.toList();
     const machinesPerRow = 2;
-    final rowModels = unflatten(machines, machinesPerRow);
+    final rowModels = unflattenWithPadNull(machines, machinesPerRow);
     final children = <Widget>[
       Text(zoneID),
-      ...rowModels.map((e) => Expanded(
-        child: Row(
-            children: e
-                .map((m) => FractionallySizedBox(
-                    widthFactor: 1 / machinesPerRow,
-                    child: machineWidget(status, locality, m.key, m.value)))
-                .toList()),
-      ))
+      ...rowModels.map((e) => Row(
+          children: e
+              .map((m) => Expanded(child: m == null ? Container() : machineWidget(status, locality, m.key, m.value)))
+              .toList()))
     ];
     return Container(
       key: Key(zoneID),
       // decoration: BoxDecoration(border: Border.all(color: Colors.red)),
-      child: Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: children,
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
       ),
     );
   }
@@ -114,19 +107,16 @@ class _LocalityScreenState extends State<LocalityScreen> {
           }
           final zones = locality.zones();
 
-          return Expanded(
-            child: Column(
-              children: [
-                const Text('header'),
-                Expanded(
-                  child: ListView(
-                      children: zones.entries
-                          .map((e) =>
-                              Expanded(child: zoneWidget(status, locality, e.key, e.value)))
-                          .toList()),
-                ),
-              ],
-            ),
+          return Column(
+            children: [
+              Expanded(
+                child: ListView(
+                    children: zones.entries
+                        .map(
+                            (e) => zoneWidget(status, locality, e.key, e.value))
+                        .toList()),
+              ),
+            ],
           );
         });
   }

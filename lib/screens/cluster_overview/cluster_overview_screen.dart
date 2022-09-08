@@ -150,8 +150,7 @@ class _ClusterOverviewState extends State<ClusterOverview> {
             issues.add(MessageIssue('no-issue', IssueSeverity.info,
                 RichString.build(['No issue'])));
           }
-          return Expanded(
-              child: Row(
+          return Row(
             children: [
               Expanded(
                 child: Column(
@@ -177,7 +176,7 @@ class _ClusterOverviewState extends State<ClusterOverview> {
                 ),
               ),
             ],
-          ));
+          );
         });
   }
 

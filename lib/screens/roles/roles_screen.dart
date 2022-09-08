@@ -192,20 +192,18 @@ class _RolesScreenState extends State<RolesScreen> {
                 );
               });
 
-          return Expanded(
-            child: Column(
-              children: [
-                buildClusterHeader(cluster),
-                Expanded(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: rolesList),
-                    ],
-                  ),
+          return Column(
+            children: [
+              buildClusterHeader(cluster),
+              Expanded(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: rolesList),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           );
         });
   }

@@ -123,77 +123,75 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
           )),
         ];
         // TODO: Use LayoutBuilder to make it responsive
-        return Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                margin: const EdgeInsets.symmetric(
-                    horizontal: defaultPadding, vertical: defaultPadding / 2),
-                child: SizedBox(
-                  height: 25,
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              IntrinsicWidth(
-                                child: ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    minWidth: 100,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(
+                  horizontal: defaultPadding, vertical: defaultPadding / 2),
+              child: SizedBox(
+                height: 25,
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            IntrinsicWidth(
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(
+                                  minWidth: 100,
+                                ),
+                                child: TextField(
+                                  decoration: const InputDecoration(
+                                    border: UnderlineInputBorder(),
+                                    hintText: 'Filter...',
                                   ),
-                                  child: TextField(
-                                    decoration: const InputDecoration(
-                                      border: UnderlineInputBorder(),
-                                      hintText: 'Filter...',
-                                    ),
-                                    onChanged: (s) {
-                                      setState(() {
-                                        searchQuery = s;
-                                      });
-                                    },
-                                  ),
+                                  onChanged: (s) {
+                                    setState(() {
+                                      searchQuery = s;
+                                    });
+                                  },
                                 ),
                               ),
-                            ]),
-                        Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              DropdownButton<ProcessGroupBy>(
-                                  isDense: true,
-                                  items: ProcessGroupBy.values
-                                      .map((e) => DropdownMenuItem(
-                                          child: Text(e.name), value: e))
-                                      .toList(),
-                                  value: groupBy,
-                                  onChanged: (e) {
-                                    setState(() {
-                                      groupBy = e!;
-                                    });
-                                  }),
-                              DropdownButton<MetricStyle>(
-                                  isDense: true,
-                                  items: MetricStyle.values
-                                      .map((e) => DropdownMenuItem(
-                                          child: Text(e.name), value: e))
-                                      .toList(),
-                                  value: metricStyle,
-                                  onChanged: (e) {
-                                    setState(() {
-                                      metricStyle = e!;
-                                    });
-                                  }),
-                            ]),
-                      ]),
-                ),
+                            ),
+                          ]),
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            DropdownButton<ProcessGroupBy>(
+                                isDense: true,
+                                items: ProcessGroupBy.values
+                                    .map((e) => DropdownMenuItem(
+                                        child: Text(e.name), value: e))
+                                    .toList(),
+                                value: groupBy,
+                                onChanged: (e) {
+                                  setState(() {
+                                    groupBy = e!;
+                                  });
+                                }),
+                            DropdownButton<MetricStyle>(
+                                isDense: true,
+                                items: MetricStyle.values
+                                    .map((e) => DropdownMenuItem(
+                                        child: Text(e.name), value: e))
+                                    .toList(),
+                                value: metricStyle,
+                                onChanged: (e) {
+                                  setState(() {
+                                    metricStyle = e!;
+                                  });
+                                }),
+                          ]),
+                    ]),
               ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: bodyRowItems,
-              ),
-            ],
-          ),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: bodyRowItems,
+            ),
+          ],
         );
       },
     );

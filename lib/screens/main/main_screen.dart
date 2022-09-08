@@ -60,7 +60,7 @@ class MainScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  content,
+                  Expanded(child: content),
                 ],
               ),
             ),
