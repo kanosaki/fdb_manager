@@ -31,7 +31,7 @@ class MetricBarPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     const frameWidth = 1.0;
-    final splitPoint = size.width * ratio;
+    final splitPoint = size.width * (ratio >= 1.0 ? 1.0 : ratio);
     // Start painting content
     {
       final paint = Paint();
@@ -39,7 +39,7 @@ class MetricBarPainter extends CustomPainter {
       canvas.drawRect(Rect.fromLTWH(0, 0, splitPoint, size.height), paint);
     }
     if (watermark != null) {
-      final wm = watermark!;
+      final wm = watermark! >= 1.0 ? 1.0 : watermark!;
       final wmc = watermarkColor ?? color;
       final paint = Paint();
       paint.color = wmc.mainColor;

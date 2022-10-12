@@ -73,7 +73,7 @@ class _AppMainState extends State<AppMain> {
     final api = cc == null
         ? NotInitializedAgentApi()
         : AgentApi(cc.baseUrl, http.Client());
-    final initialRoute = cc == null ? '/connect' : '/overview';
+    final initialRoute = cc == null ? '/connect' : '/locality';
     final isp = InstantStatusProvider(api);
     cm.clusterChanged = (ci) => isp.switchCluster(ci == null
         ? NotInitializedAgentApi()

@@ -6,6 +6,7 @@ spec:
   automationOptions:
     replacements:
       enabled: true
+  storageServersPerPod: 2
   faultDomain:
     key: foundationdb.org/none
   labels:
@@ -21,7 +22,7 @@ spec:
     cluster_controller: 1
     stateless: -1
     log: 4
-    storage: 3
+    storage: 4
   processes:
     general:
       customParameters:

@@ -1,3 +1,4 @@
+import 'package:fdb_manager/components/metric_bar.dart';
 import 'package:fdb_manager/util/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,8 +15,15 @@ class LocalityScreen extends StatefulWidget {
 }
 
 class _LocalityScreenState extends State<LocalityScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<InstantStatusProvider>().updatePeriodic();
+  }
+
   Widget processWidget(
       InstantStatus status, ProcessByLocality locality, ProcessInfo process) {
+    final memUsage = process.memory.usedBytes.toDouble() / process.memory.availableBytes;
     return Container(
       decoration: BoxDecoration(
           border: Border.all(color: Colors.black),
@@ -23,9 +31,30 @@ class _LocalityScreenState extends State<LocalityScreen> {
       padding: const EdgeInsets.all(2),
       margin: const EdgeInsets.all(2),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(process.address),
           RoleTag(process.roles),
+          SizedBox(
+              height: 20,
+              child: MetricBar(
+                  ratio: process.cpuUsageCores,
+                  text:
+                      'CPU ${(process.cpuUsageCores * 100).toStringAsFixed(0)}%')),
+          SizedBox(
+              height: 20,
+              child: MetricBar(
+                  ratio: memUsage,
+                  text:
+                  'MEM ${(memUsage * 100).toStringAsFixed(0)}%')),
+          SizedBox(
+              height: 20,
+              child: MetricBar(
+                  ratio: process.disk.busy,
+                  text:
+                      'Disk busy ${(process.disk.busy * 100).toStringAsFixed(0)}%')),
+          Text('Tx:${process.network.mbpsSent.toStringAsFixed(1)}Mbps'),
+          Text('Rx:${process.network.mbpsReceived.toStringAsFixed(1)}Mbps'),
         ],
       ),
     );
@@ -33,6 +62,7 @@ class _LocalityScreenState extends State<LocalityScreen> {
 
   Widget machineWidget(InstantStatus status, ProcessByLocality locality,
       String machineID, List<ProcessInfo> processes) {
+    final machine = status.getMachineByID(machineID);
     return Container(
       margin: const EdgeInsets.all(5),
       decoration: BoxDecoration(border: Border.all(color: Colors.black)),
@@ -42,7 +72,7 @@ class _LocalityScreenState extends State<LocalityScreen> {
         child: Row(
           children: [
             SizedBox(
-              width: 120,
+              width: 200,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -52,11 +82,10 @@ class _LocalityScreenState extends State<LocalityScreen> {
             ),
             Expanded(
               child: SizedBox(
-                width: 200,
-                height: 200,
+                height: 160,
                 child: GridView.extent(
                     // physics: const NeverScrollableScrollPhysics(),
-                    maxCrossAxisExtent: 200,
+                    maxCrossAxisExtent: 160,
                     children: processes
                         .map((e) => processWidget(status, locality, e))
                         .toList()),
@@ -77,7 +106,10 @@ class _LocalityScreenState extends State<LocalityScreen> {
       Text(zoneID),
       ...rowModels.map((e) => Row(
           children: e
-              .map((m) => Expanded(child: m == null ? Container() : machineWidget(status, locality, m.key, m.value)))
+              .map((m) => Expanded(
+                  child: m == null
+                      ? Container()
+                      : machineWidget(status, locality, m.key, m.value)))
               .toList()))
     ];
     return Container(

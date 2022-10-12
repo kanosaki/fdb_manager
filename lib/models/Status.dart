@@ -97,6 +97,13 @@ class ProcessInfo {
 
   ProcessInfo(this._data);
 
+  double get cpuUsageCores => _data['cpu']['usage_cores'] as double;
+
+  ProcessDiskStats get disk => ProcessDiskStats(_data['disk']);
+
+  ProcessMemoryStats get memory => ProcessMemoryStats(_data['memory']);
+  ProcessNetworkStats get network => ProcessNetworkStats(_data['network']);
+
   String get address => _data['address'];
 
   bool get excluded => _data['excluded'];
@@ -112,8 +119,44 @@ class ProcessInfo {
 
   Map<String, dynamic> get locality => _data['locality'];
 
-  List<String> get roles =>
-      (_data['roles'] as List<dynamic>).map((e) => e['role'] as String).toList();
+  List<String> get roles => (_data['roles'] as List<dynamic>)
+      .map((e) => e['role'] as String)
+      .toList();
+}
+
+class ProcessDiskStats {
+  final dynamic _data;
+
+  ProcessDiskStats(this._data);
+
+  double get busy => _data['busy'] as double;
+
+  int get freeBytes => _data['free_bytes'] as int;
+}
+
+class ProcessMemoryStats {
+  final dynamic _data;
+
+  ProcessMemoryStats(this._data);
+
+  int get availableBytes => _data['available_bytes'];
+
+  int get limitBytes => _data['limit_bytes'];
+
+  int get usedBytes => _data['used_bytes'];
+
+  int get rssBytes => _data['rss_bytes'];
+
+  int get unusedAllocatedMemory => _data['unused_allocated_memory'];
+}
+
+class ProcessNetworkStats {
+  final dynamic _data;
+
+  ProcessNetworkStats(this._data);
+
+  double get mbpsReceived => _data['megabits_received']['hz'];
+  double get mbpsSent => _data['megabits_sent']['hz'];
 }
 
 class RegionInfo {
