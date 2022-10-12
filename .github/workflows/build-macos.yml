@@ -13,6 +13,6 @@ jobs:
         with:
           channel: 'stable'
           cache: true
-          architecture: arm64
+          architecture: x64
       - run: flutter config --enable-macos-desktop
       - run: flutter build macos
