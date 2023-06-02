@@ -95,7 +95,7 @@ class _AppMainState extends State<AppMain> {
     return MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (context) => cm),
-          ChangeNotifierProvider(create: (context) => MenuController()),
+          // ChangeNotifierProvider(create: (context) => MenuController()),
           ChangeNotifierProvider(create: (context) => isp),
           ChangeNotifierProvider(create: (context) => widget._db),
         ],
