@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:fdb_manager/agent_api.dart';
 import 'package:fdb_manager/constants.dart';
-import 'package:fdb_manager/controllers/MenuController.dart';
+import 'package:fdb_manager/controllers/MenuController.dart' as mc;
 import 'package:fdb_manager/screens/cluster_overview/cluster_overview_screen.dart';
 import 'package:fdb_manager/screens/dashboard/dashboard_screen.dart';
 import 'package:fdb_manager/screens/locality/locality_screen.dart';
@@ -73,7 +73,7 @@ class _AppMainState extends State<AppMain> {
     final api = cc == null
         ? NotInitializedAgentApi()
         : AgentApi(cc.baseUrl, http.Client());
-    final initialRoute = cc == null ? '/connect' : '/locality';
+    final initialRoute = cc == null ? '/connect' : '/processes';
     final isp = InstantStatusProvider(api);
     cm.clusterChanged = (ci) => isp.switchCluster(ci == null
         ? NotInitializedAgentApi()
@@ -95,7 +95,7 @@ class _AppMainState extends State<AppMain> {
     return MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (context) => cm),
-          // ChangeNotifierProvider(create: (context) => MenuController()),
+          ChangeNotifierProvider(create: (context) => mc.MenuController()),
           ChangeNotifierProvider(create: (context) => isp),
           ChangeNotifierProvider(create: (context) => widget._db),
         ],

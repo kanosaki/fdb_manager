@@ -103,14 +103,16 @@ class _RolesScreenState extends State<RolesScreen> {
             ),
           );
           final process = status.getProcessByID(e.processId)!;
+          final availableBytes = e.data['kvstore_available_bytes'];
+          final availableBytesStr = availableBytes != null ? numToBytesStr(availableBytes) : 'N/A';
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                  '${process.address} available=${numToBytesStr(e.data['kvstore_available_bytes'])}'),
+                  '${process.address} available=$availableBytesStr'),
               Row(children: [
-                SizedBox(child: queryCountChart, width: 200, height: 70),
-                SizedBox(child: latencyChart, width: 200, height: 70),
+                SizedBox(width: 200, height: 70, child: queryCountChart),
+                SizedBox(width: 200, height: 70, child: latencyChart),
               ]),
             ],
           );

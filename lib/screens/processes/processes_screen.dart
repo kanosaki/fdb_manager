@@ -46,6 +46,7 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
   Widget _processesTable(Map<String, dynamic> processes) {
     final processTable = DataTable2(
       columns: const [
+        DataColumn2(label: Text('Flags'), fixedWidth: 50),
         DataColumn2(label: Text('Address')),
         DataColumn2(label: Text('Roles')),
         DataColumn2(label: Text('CPU')),
@@ -58,10 +59,17 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
           Navigator.pushNamed(context, '/process/details', arguments: e.key);
         }
 
+        final isExcluded = e.value['excluded'];
+
         const width = 200.0;
         const height = 50.0;
 
         return DataRow(cells: [
+          DataCell(Row(
+            children: [
+              if (isExcluded) const Icon(Icons.block, color: Colors.red),
+            ],
+          )),
           DataCell(Text(e.value['address']), onTap: onTap),
           DataCell(aggregateRoles(e.value['roles'])),
           DataCell(
@@ -163,7 +171,7 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
                                 isDense: true,
                                 items: ProcessGroupBy.values
                                     .map((e) => DropdownMenuItem(
-                                        child: Text(e.name), value: e))
+                                        value: e, child: Text(e.name)))
                                     .toList(),
                                 value: groupBy,
                                 onChanged: (e) {
@@ -175,7 +183,7 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
                                 isDense: true,
                                 items: MetricStyle.values
                                     .map((e) => DropdownMenuItem(
-                                        child: Text(e.name), value: e))
+                                        value: e, child: Text(e.name)))
                                     .toList(),
                                 value: metricStyle,
                                 onChanged: (e) {
@@ -187,10 +195,11 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
                     ]),
               ),
             ),
-            Row(
+            Expanded(
+                child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: bodyRowItems,
-            ),
+            )),
           ],
         );
       },

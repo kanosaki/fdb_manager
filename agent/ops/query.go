@@ -7,9 +7,13 @@ import (
 	"strconv"
 )
 
+// QueryProcessParam receives query parameters in /process/query
+// Query spec:
+// process_id
+//
+//	?process_id=ip:port&process_id=ip:port&...
 type QueryProcessParam struct {
-	// ProcessID is "ip:port" of the process in the FoundationDB
-	ProcessIDs []string `form:"process_ids"`
+	ProcessIDs []string `query:"process_id"`
 }
 
 type ProcessInfo struct {
@@ -20,6 +24,8 @@ type ProcessInfo struct {
 	Hostnames []string `json:"hostnames"`
 }
 
+// QueryProcess collects process information and returns ProcessInfo.
+// Collecting process are specified by QueryProcessParam
 func QueryProcess(ctx context.Context, param *QueryProcessParam) ([]ProcessInfo, error) {
 	var ret []ProcessInfo
 	for _, processID := range param.ProcessIDs {

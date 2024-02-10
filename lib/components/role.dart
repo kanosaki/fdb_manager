@@ -4,11 +4,15 @@ class RoleTag extends StatelessWidget {
   const RoleTag(
     this.roles, {
     Key? key,
+    this.grouped = true,
+    this.darkened = false,
     this.clusterManagerWidth = tagBaseWidth * 8 + tagPadWidth * 2,
     this.transactionAuthorityWidth = tagBaseWidth * 4 + tagPadWidth * 2,
     this.storageWidth = tagBaseWidth * 3 + tagPadWidth * 2,
   }) : super(key: key);
   final List<String> roles;
+  final bool grouped;
+  final bool darkened;
   final int clusterManagerWidth;
   final int transactionAuthorityWidth;
   final int storageWidth;
@@ -43,6 +47,8 @@ class RoleTag extends StatelessWidget {
     'storage': const Color.fromRGBO(220, 212, 253, 1.0),
   };
 
+  static const darkenRatio = 0.7;
+
   static final rolesSymbolMap = {
     'coordinator': 'Co',
     'master': 'M',
@@ -58,16 +64,20 @@ class RoleTag extends StatelessWidget {
   };
 
   Widget buildTag(BuildContext context, String name) {
-    final textColor = roleCategory[name] == 0
+    final textColorBase = roleCategory[name] == 0
         ? const Color.fromRGBO(255, 255, 255, 1)
         : const Color.fromRGBO(0, 0, 0, 1);
+    final hsvTextColor = HSVColor.fromColor(textColorBase);
+    final textColor = darkened
+        ? hsvTextColor.withValue(hsvTextColor.value * darkenRatio).toColor()
+        : textColorBase;
+    final baseColor =
+        HSVColor.fromColor(borderColorMap[name] ?? const Color.fromRGBO(100, 100, 100, 1));
     final color =
-        borderColorMap[name] ?? const Color.fromRGBO(100, 100, 100, 1);
+        darkened ? baseColor.withValue(baseColor.value * .5) : baseColor;
     final symbol = rolesSymbolMap[name] ?? name;
-    final colorValue = HSVColor.fromColor(color).value;
-    final borderColor = HSVColor.fromColor(color)
-        .withValue(colorValue > 0.5 ? colorValue - 0.5 : 0.0)
-        .toColor();
+    final borderColor =
+        color.withValue(color.value * darkenRatio).toColor();
     return Tooltip(
       message: name,
       waitDuration: const Duration(milliseconds: 500),
@@ -76,7 +86,7 @@ class RoleTag extends StatelessWidget {
         padding: const EdgeInsets.all(2.0),
         decoration: BoxDecoration(
           border: Border.all(color: borderColor),
-          color: color,
+          color: color.toColor(),
           borderRadius: const BorderRadiusDirectional.all(Radius.circular(3.0)),
         ),
         child: Text(symbol, style: TextStyle(color: textColor)),
@@ -86,28 +96,27 @@ class RoleTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
-      Expanded(
-          flex: storageWidth,
-          child: Row(
-              children: roles
-                  .where((e) => roleCategory[e] == 2)
-                  .map((e) => buildTag(context, e))
-                  .toList())),
-      Expanded(
-          flex: transactionAuthorityWidth,
-          child: Row(
-              children: roles
-                  .where((e) => roleCategory[e] == 1)
-                  .map((e) => buildTag(context, e))
-                  .toList())),
-      Expanded(
-          flex: clusterManagerWidth,
-          child: Row(
-              children: roles
-                  .where((e) => roleCategory[e] == 0)
-                  .map((e) => buildTag(context, e))
-                  .toList())),
-    ]);
+    final category2 = roles
+        .where((e) => roleCategory[e] == 2)
+        .map((e) => buildTag(context, e))
+        .toList();
+    final category1 = roles
+        .where((e) => roleCategory[e] == 1)
+        .map((e) => buildTag(context, e))
+        .toList();
+    final category0 = roles
+        .where((e) => roleCategory[e] == 0)
+        .map((e) => buildTag(context, e))
+        .toList();
+    if (grouped) {
+      return Row(children: [
+        Expanded(flex: storageWidth, child: Row(children: category2)),
+        Expanded(
+            flex: transactionAuthorityWidth, child: Row(children: category1)),
+        Expanded(flex: clusterManagerWidth, child: Row(children: category0)),
+      ]);
+    } else {
+      return Row(children: [...category2, ...category1, ...category0]);
+    }
   }
 }

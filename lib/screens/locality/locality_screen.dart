@@ -23,39 +23,45 @@ class _LocalityScreenState extends State<LocalityScreen> {
 
   Widget processWidget(
       InstantStatus status, ProcessByLocality locality, ProcessInfo process) {
-    final memUsage = process.memory.usedBytes.toDouble() / process.memory.availableBytes;
+    final memUsage = (process.memory.rssBytes).toDouble() /
+        process.memory.limitBytes.toDouble();
+    final excluded = process.excluded;
     return Container(
       decoration: BoxDecoration(
           border: Border.all(color: Colors.black),
-          borderRadius: const BorderRadius.all(Radius.circular(5))),
+          borderRadius: const BorderRadius.all(Radius.circular(5)),
+          color: excluded ? Colors.grey : null,
+      ),
       padding: const EdgeInsets.all(2),
       margin: const EdgeInsets.all(2),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(process.address),
-          RoleTag(process.roles),
-          SizedBox(
-              height: 20,
-              child: MetricBar(
-                  ratio: process.cpuUsageCores,
-                  text:
-                      'CPU ${(process.cpuUsageCores * 100).toStringAsFixed(0)}%')),
-          SizedBox(
-              height: 20,
-              child: MetricBar(
-                  ratio: memUsage,
-                  text:
-                  'MEM ${(memUsage * 100).toStringAsFixed(0)}%')),
-          SizedBox(
-              height: 20,
-              child: MetricBar(
-                  ratio: process.disk.busy,
-                  text:
-                      'Disk busy ${(process.disk.busy * 100).toStringAsFixed(0)}%')),
-          Text('Tx:${process.network.mbpsSent.toStringAsFixed(1)}Mbps'),
-          Text('Rx:${process.network.mbpsReceived.toStringAsFixed(1)}Mbps'),
-        ],
+      child: SizedBox(
+        width: 200,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(process.address),
+            RoleTag(process.roles, grouped: false, darkened: excluded),
+            SizedBox(
+                height: 20,
+                child: MetricBar(
+                    ratio: process.cpuUsageCores,
+                    text:
+                        'CPU ${(process.cpuUsageCores * 100).toStringAsFixed(0)}%')),
+            SizedBox(
+                height: 20,
+                child: MetricBar(
+                    ratio: memUsage,
+                    text: 'MEM ${(memUsage * 100).toStringAsFixed(0)}%')),
+            SizedBox(
+                height: 20,
+                child: MetricBar(
+                    ratio: process.disk.busy,
+                    text:
+                        'Disk busy ${(process.disk.busy * 100).toStringAsFixed(0)}%')),
+            Text('Tx:${process.network.mbpsSent.toStringAsFixed(1)}Mbps'),
+            Text('Rx:${process.network.mbpsReceived.toStringAsFixed(1)}Mbps'),
+          ],
+        ),
       ),
     );
   }
@@ -63,34 +69,25 @@ class _LocalityScreenState extends State<LocalityScreen> {
   Widget machineWidget(InstantStatus status, ProcessByLocality locality,
       String machineID, List<ProcessInfo> processes) {
     final machine = status.getMachineByID(machineID);
+    final excluded = machine?.excluded ?? false;
     return Container(
       margin: const EdgeInsets.all(5),
-      decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black),
+        color: excluded ? Colors.grey : null,
+      ),
       child: Container(
         margin: const EdgeInsets.all(5),
         key: Key(machineID),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              width: 200,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('M: $machineID'),
-                ],
-              ),
-            ),
-            Expanded(
-              child: SizedBox(
-                height: 160,
-                child: GridView.extent(
-                    // physics: const NeverScrollableScrollPhysics(),
-                    maxCrossAxisExtent: 160,
-                    children: processes
-                        .map((e) => processWidget(status, locality, e))
-                        .toList()),
-              ),
-            ),
+            Text('M: $machineID'),
+            Wrap(
+              children: processes
+                  .map((e) => processWidget(status, locality, e))
+                  .toList(),
+            )
           ],
         ),
       ),
@@ -103,7 +100,6 @@ class _LocalityScreenState extends State<LocalityScreen> {
     const machinesPerRow = 2;
     final rowModels = unflattenWithPadNull(machines, machinesPerRow);
     final children = <Widget>[
-      Text(zoneID),
       ...rowModels.map((e) => Row(
           children: e
               .map((m) => Expanded(
@@ -117,7 +113,13 @@ class _LocalityScreenState extends State<LocalityScreen> {
       // decoration: BoxDecoration(border: Border.all(color: Colors.red)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: children,
+        children: [
+          Text(zoneID),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: children,
+          ),
+        ],
       ),
     );
   }
