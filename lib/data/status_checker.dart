@@ -64,10 +64,11 @@ class MetricIssue extends Issue {
 }
 
 class StatusValidationResult {
-  const StatusValidationResult(this.issues, this.clientFatal);
+  const StatusValidationResult(this.issues, this.clientFatal, this.clusterFailure);
 
   final List<Issue> issues;
   final bool clientFatal;
+  final bool clusterFailure;
 }
 
 class StatusValidatorContext {
@@ -192,7 +193,8 @@ class StatusValidator {
     final issues = checkIssues(StatusValidatorContext(status, history));
     final clientFatal =
         issues.any((e) => e.severity == IssueSeverity.clientFatal);
-    return StatusValidationResult(issues.toList(), clientFatal);
+    final clusterFailure = issues.any((e) => e.severity == IssueSeverity.fatal || e.severity == IssueSeverity.error);
+    return StatusValidationResult(issues.toList(), clientFatal, clusterFailure);
   }
 
   Iterable<Issue> checkIssues(StatusValidatorContext c) sync* {

@@ -27,6 +27,26 @@ class CPUUsageChart extends TimeSeriesChartBase {
   }
 }
 
+class LoopBusyChart extends TimeSeriesChartBase {
+  LoopBusyChart(this.processID,
+      {Key? key, charts.LayoutConfig? layout, Duration? span, bool? showLegend})
+      : super(key: key, layout: layout, span: span, showLegend: showLegend);
+
+  final String processID;
+
+  @override
+  Iterable<ChartSeries> series() {
+    return [
+      ChartSeries(name: 'loop_busy', path: [
+        'cluster',
+        'processes',
+        processID,
+        'run_loop_busy',
+      ])
+    ];
+  }
+}
+
 class MemoryUsageChart extends TimeSeriesChartBase {
   MemoryUsageChart(this.processID,
       {Key? key, charts.LayoutConfig? layout, Duration? span, bool? showLegend})
@@ -55,6 +75,27 @@ class MemoryUsageChart extends TimeSeriesChartBase {
       preferredColor,
       formatCapacity(max),
     );
+  }
+}
+
+class DiskBusyChart extends TimeSeriesChartBase {
+  DiskBusyChart(this.processID,
+      {Key? key, charts.LayoutConfig? layout, Duration? span, bool? showLegend})
+      : super(key: key, layout: layout, span: span, showLegend: showLegend);
+
+  final String processID;
+
+  @override
+  Iterable<ChartSeries> series() {
+    return [
+      ChartSeries(name: 'read', path: [
+        'cluster',
+        'processes',
+        processID,
+        'disk',
+        'busy',
+      ]),
+    ];
   }
 }
 

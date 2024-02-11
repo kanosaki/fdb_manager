@@ -119,9 +119,13 @@ class ProcessInfo {
 
   Map<String, dynamic> get locality => _data['locality'];
 
+  String get faultDomain => _data['fault_domain'] as String;
+
   List<String> get roles => (_data['roles'] as List<dynamic>)
       .map((e) => e['role'] as String)
       .toList();
+
+  double get busy => _data['run_loop_busy'] as double;
 }
 
 class ProcessDiskStats {

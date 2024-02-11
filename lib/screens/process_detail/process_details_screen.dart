@@ -126,8 +126,8 @@ class _ProcessDetailsScreenState extends State<ProcessDetailsScreen> {
                     flex: 1,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: coreMetrics,
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      children: coreMetrics,
                     )),
                 Expanded(
                     flex: 1,

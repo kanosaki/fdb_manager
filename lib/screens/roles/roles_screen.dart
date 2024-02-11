@@ -1,3 +1,4 @@
+import 'package:fdb_manager/components/charts/statistics_chart.dart';
 import 'package:fdb_manager/models/status.dart';
 import 'package:fdb_manager/util/units.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,79 @@ class _RolesScreenState extends State<RolesScreen> {
       String roleType, List<ProcessRoleInfo> pris) {
     Widget buildRoleLog() {
       return const Text('');
+    }
+
+    Widget buildRoleCommitProxy() {
+      final items = pris.map((e) {
+        final process = status.getProcessByID(e.processId)!;
+        final basePath = [
+          'cluster',
+          'processes',
+          e.processId,
+          'roles',
+          'commit_proxy',
+        ];
+        final latencyPath = [...basePath, 'commit_latency_statistics'];
+        final batchingWindowPath = [...basePath, 'commit_batching_window_size'];
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(process.address),
+            Row(children: [
+              SizedBox(
+                  width: 200,
+                  height: 70,
+                  child: StatisticsChart(batchingWindowPath)),
+              SizedBox(
+                  width: 200,
+                  height: 70,
+                  child: StatisticsChart(
+                    latencyPath,
+                    isLatency: true,
+                  )),
+            ]),
+          ],
+        );
+      }).toList();
+      return Column(children: items);
+    }
+
+    Widget buildRoleGRVProxy() {
+      final items = pris.map((e) {
+        final process = status.getProcessByID(e.processId)!;
+        final basePath = [
+          'cluster',
+          'processes',
+          e.processId,
+          'roles',
+          'grv_proxy',
+        ];
+        final batchLatency = [...basePath, 'grv_latency_statistics', 'batch'];
+        final defaultLatency = [...basePath, 'grv_latency_statistics', 'default'];
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(process.address),
+            Row(children: [
+              SizedBox(
+                  width: 200,
+                  height: 70,
+                  child: StatisticsChart(
+                    defaultLatency,
+                    isLatency: true,
+                  )),
+              SizedBox(
+                  width: 200,
+                  height: 70,
+                  child: StatisticsChart(
+                    batchLatency,
+                    isLatency: true,
+                  )),
+            ]),
+          ],
+        );
+      }).toList();
+      return Column(children: items);
     }
 
     Widget buildRoleProxy() {
@@ -104,12 +178,12 @@ class _RolesScreenState extends State<RolesScreen> {
           );
           final process = status.getProcessByID(e.processId)!;
           final availableBytes = e.data['kvstore_available_bytes'];
-          final availableBytesStr = availableBytes != null ? numToBytesStr(availableBytes) : 'N/A';
+          final availableBytesStr =
+              availableBytes != null ? numToBytesStr(availableBytes) : 'N/A';
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                  '${process.address} available=$availableBytesStr'),
+              Text('${process.address} available=$availableBytesStr'),
               Row(children: [
                 SizedBox(width: 200, height: 70, child: queryCountChart),
                 SizedBox(width: 200, height: 70, child: latencyChart),
@@ -129,6 +203,8 @@ class _RolesScreenState extends State<RolesScreen> {
       'resolver': buildRoleDefault,
       'log': buildRoleLog,
       'proxy': buildRoleProxy,
+      'commit_proxy': buildRoleCommitProxy,
+      'grv_proxy': buildRoleGRVProxy,
       'storage': buildRoleStorage,
     };
     final builder = builders[roleType];

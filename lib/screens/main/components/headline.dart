@@ -44,6 +44,9 @@ class _HeadlineState extends State<Headline> {
           }
           final theme = Theme.of(context);
           final issues = checkResult.issues;
+          final clusterState = checkResult.clusterFailure
+              ? ClusterState.Fail
+              : (issues.isEmpty ? ClusterState.Ok : ClusterState.Warn);
           final cluster = status.raw['cluster'];
           final readBytes = cluster['workload']['bytes']['read']['hz'];
           final writeBytes = cluster['workload']['bytes']['written']['hz'];
@@ -58,7 +61,7 @@ class _HeadlineState extends State<Headline> {
             children: [
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                 child: SizedBox(
                     width: 100,
                     child: ReadWriteRateChart(
@@ -72,7 +75,7 @@ class _HeadlineState extends State<Headline> {
               ),
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -88,8 +91,15 @@ class _HeadlineState extends State<Headline> {
               ),
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
-                child: Text('${issues.length}issues'),
+                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TricolorIndicator(clusterState),
+                    checkResult.clientFatal ? const Text('Disconnected') : Text('${issues.length} issues'),
+                  ],
+                ),
               ),
             ],
           );
@@ -158,5 +168,55 @@ class ReadWriteRateChart extends TimeSeriesChartBase {
         'hz',
       ]),
     ];
+  }
+}
+
+enum ClusterState { None, Ok, Warn, Fail }
+
+// Tri-color indicator colors: from JIS Z 9103:2018(MOD)
+const tciOKColor = Color(0xFF00B06B);
+const tciNoticeColor = Color(0xFFF2E700);
+const tciStopColor = Color(0xFFFF4B00);
+
+class TricolorIndicator extends StatelessWidget {
+  const TricolorIndicator(this.state,
+      {Key? key, this.width = 30, this.height = 20})
+      : super(key: key);
+  final double width, height;
+  final ClusterState state;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            color: state == ClusterState.Ok ? tciOKColor : Colors.grey,
+            border: Border.all(color: Colors.black),
+            shape: BoxShape.rectangle,
+          ),
+        ),
+        Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            color: state == ClusterState.Warn ? tciNoticeColor : Colors.grey,
+            border: Border.all(color: Colors.black),
+            shape: BoxShape.rectangle,
+          ),
+        ),
+        Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            color: state == ClusterState.Fail ? tciStopColor : Colors.grey,
+            border: Border.all(color: Colors.black),
+            shape: BoxShape.rectangle,
+          ),
+        ),
+      ],
+    );
   }
 }

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:data_table_2/data_table_2.dart';
 import 'package:fdb_manager/agent_api.dart';
+import 'package:fdb_manager/components/metric_bar.dart';
 import 'package:fdb_manager/components/process/basic_charts.dart';
 import 'package:fdb_manager/components/role.dart';
 import 'package:fdb_manager/models/status.dart';
@@ -50,8 +51,10 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
         DataColumn2(label: Text('Address')),
         DataColumn2(label: Text('Roles')),
         DataColumn2(label: Text('CPU')),
+        DataColumn2(label: Text('Busy')),
         DataColumn2(label: Text('Mem')),
-        DataColumn2(label: Text('Disk')),
+        DataColumn2(label: Text('Disk Busy')),
+        DataColumn2(label: Text('Disk(Free/Hz)')),
         DataColumn2(label: Text('Net')),
       ],
       rows: processes.entries.map((e) {
@@ -76,13 +79,23 @@ class _ProcessesScreenState extends State<ProcessesScreen> {
             SizedBox(height: height, width: width, child: CPUUsageChart(e.key)),
           ),
           DataCell(
+            SizedBox(height: height, width: width, child: LoopBusyChart(e.key)),
+          ),
+          DataCell(
             SizedBox(
                 height: height, width: width, child: MemoryUsageChart(e.key)),
           ),
           DataCell(
-            SizedBox(
-                height: height, width: width, child: DiskUsageChart(e.key)),
+            SizedBox(height: height, width: width, child: DiskBusyChart(e.key)),
           ),
+          DataCell(Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(numToBytesStr(e.value['disk']['free_bytes'])),
+              Text(
+                  'R:${intToSuffixedStr(e.value['disk']['reads']['hz'])}, W:${intToSuffixedStr(e.value['disk']['writes']['hz'])}'),
+            ],
+          )),
           DataCell(
             SizedBox(
                 height: height, width: width, child: NetworkUsageChart(e.key)),

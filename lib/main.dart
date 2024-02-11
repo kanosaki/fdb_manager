@@ -61,7 +61,9 @@ class _AppMainState extends State<AppMain> {
   Widget build(BuildContext context) {
     final baseTheme = ThemeData.from(
       colorScheme: ColorScheme.fromSwatch(
-          primarySwatch: Colors.grey, backgroundColor: Colors.white),
+        primarySwatch: Colors.grey,
+        backgroundColor: Colors.white,
+      ),
     );
     final cm = _cm;
     if (cm == null) {
@@ -105,7 +107,7 @@ class _AppMainState extends State<AppMain> {
           title: 'fdb_manager',
           theme: baseTheme.copyWith(
             appBarTheme: baseTheme.appBarTheme.copyWith(
-              color: baseTheme.primaryColor,
+              color: Colors.grey.shade300,
             ),
             pageTransitionsTheme: PageTransitionsTheme(
               builders: kIsWeb
