@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 	"path"
 	"time"
 
@@ -77,6 +78,11 @@ func runEcho(app *app) {
 	initOps(v1.Group("/ops"), app)
 	initStatus(v1.Group("/status"), app)
 	initCommands(v1.Group("/commands"), app)
+
+	if _, err := os.Stat("web"); err == nil {
+		log.Infof("serving static files from web")
+		e.Static("/", "web")
+	}
 
 	if err := e.Start(":8080"); err != nil {
 		log.Fatal(err)

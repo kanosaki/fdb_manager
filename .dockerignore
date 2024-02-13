@@ -1,0 +1,18 @@
+# editor files
+.idea/
+.vscode/
+
+
+# flutter configuration
+.dart_tool/
+
+# not needed for building web
+agent/agent
+agent/*.db
+
+build/
+test/
+macos/
+ios/
+android/
+docs/
