@@ -76,6 +76,11 @@ class InstantStatus {
     }
     return config.map((e) => RegionInfo(e)).toList();
   }
+
+  Exclusions get exclusions {
+    return Exclusions.fromData(
+        _data['cluster']['configuration']['excluded_servers']);
+  }
 }
 
 class MachineInfo {
@@ -102,6 +107,7 @@ class ProcessInfo {
   ProcessDiskStats get disk => ProcessDiskStats(_data['disk']);
 
   ProcessMemoryStats get memory => ProcessMemoryStats(_data['memory']);
+
   ProcessNetworkStats get network => ProcessNetworkStats(_data['network']);
 
   String get address => _data['address'];
@@ -133,7 +139,7 @@ class ProcessDiskStats {
 
   ProcessDiskStats(this._data);
 
-  double get busy => _data['busy'] as double;
+  num get busy => _data['busy'] as num;
 
   int get freeBytes => _data['free_bytes'] as int;
 }
@@ -160,6 +166,7 @@ class ProcessNetworkStats {
   ProcessNetworkStats(this._data);
 
   double get mbpsReceived => _data['megabits_received']['hz'];
+
   double get mbpsSent => _data['megabits_sent']['hz'];
 }
 
@@ -237,5 +244,69 @@ class ProcessByLocality {
       }
     }
     return zoneMap;
+  }
+}
+
+enum ExclusionType { address, locality }
+
+class Exclusion {
+  late final ExclusionType type;
+
+  // formats:
+  //   if type == address: "IP:PORT"
+  //   if type == locality:"
+  //     "locality_dcid:<...>"
+  //     "locality_zone:<...>"
+  late final String value;
+
+  Exclusion(this.type, this.value);
+
+  Exclusion.fromData(dynamic data) {
+    final locality = data['locality'] as String?;
+    final address = data['address'] as String?;
+    if (locality != null) {
+      type = ExclusionType.locality;
+      value = locality;
+    } else if (address != null) {
+      type = ExclusionType.address;
+      value = address;
+    } else {
+      throw Exception('invalid exclusion data: $data');
+    }
+  }
+}
+
+class Exclusions {
+  late final List<Exclusion> exclusions;
+
+  Exclusions(this.exclusions);
+
+  // pass cluster.configuration.excluded_servers
+  Exclusions.fromData(dynamic data) {
+    exclusions =
+        (data as List<dynamic>).map((e) => Exclusion.fromData(e)).toList();
+  }
+
+  bool isExcluded(String address) {
+    return exclusions
+        .any((e) => e.type == ExclusionType.address && e.value == address);
+  }
+
+  bool isExcludedByZoneID(String zoneID) {
+    final expr = "locality_zoneid:$zoneID";
+    return exclusions
+        .any((e) => e.type == ExclusionType.locality && e.value == expr);
+  }
+
+  bool isExcludedByDatacenterID(String dcID) {
+    final expr = "locality_dcid:$dcID";
+    return exclusions
+        .any((e) => e.type == ExclusionType.locality && e.value == expr);
+  }
+
+  bool isExcludedByMachineID(String machineID) {
+    final expr = "locality_machineid:$machineID";
+    return exclusions
+        .any((e) => e.type == ExclusionType.locality && e.value == expr);
   }
 }
