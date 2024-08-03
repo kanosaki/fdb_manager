@@ -150,32 +150,35 @@ class _ClusterOverviewState extends State<ClusterOverview> {
             issues.add(MessageIssue('no-issue', IssueSeverity.info,
                 RichString.build(['No issue'])));
           }
-          return Row(
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    Expanded(child: permanentStatus),
-                  ],
+          return Container(
+            margin: const EdgeInsets.all(10),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      Expanded(child: permanentStatus),
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                          controller: sc,
-                          itemCount: issues.length,
-                          itemBuilder: (context, index) {
-                            return RichText(
-                                text: buildIssueLine(
-                                    context, status, history, issues[index]));
-                          }),
-                    ),
-                  ],
+                Expanded(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                            controller: sc,
+                            itemCount: issues.length,
+                            itemBuilder: (context, index) {
+                              return RichText(
+                                  text: buildIssueLine(
+                                      context, status, history, issues[index]));
+                            }),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         });
   }

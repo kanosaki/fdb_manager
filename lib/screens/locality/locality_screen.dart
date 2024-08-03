@@ -46,31 +46,34 @@ class _LocalityScreenState extends State<LocalityScreen> {
       margin: const EdgeInsets.all(2),
       child: SizedBox(
         width: 200,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(process.address),
-            RoleTag(process.roles, grouped: false, darkened: excluded),
-            SizedBox(
-                height: 20,
-                child: MetricBar(
-                    ratio: process.cpuUsageCores,
-                    text:
-                        'CPU ${(process.cpuUsageCores * 100).toStringAsFixed(0)}%')),
-            SizedBox(
-                height: 20,
-                child: MetricBar(
-                    ratio: memUsage,
-                    text: 'MEM ${(memUsage * 100).toStringAsFixed(0)}%')),
-            SizedBox(
-                height: 20,
-                child: MetricBar(
-                    ratio: process.disk.busy.toDouble(),
-                    text:
-                        'Disk busy ${(process.disk.busy * 100).toStringAsFixed(0)}%')),
-            Text('Tx:${process.network.mbpsSent.toStringAsFixed(1)}Mbps'),
-            Text('Rx:${process.network.mbpsReceived.toStringAsFixed(1)}Mbps'),
-          ],
+        child: Container(
+          padding: const EdgeInsets.all(5),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(process.address),
+              RoleTag(process.roles, grouped: false, darkened: excluded),
+              SizedBox(
+                  height: 20,
+                  child: MetricBar(
+                      ratio: process.cpuUsageCores,
+                      text:
+                          'CPU ${(process.cpuUsageCores * 100).toStringAsFixed(0)}%')),
+              SizedBox(
+                  height: 20,
+                  child: MetricBar(
+                      ratio: memUsage,
+                      text: 'MEM ${(memUsage * 100).toStringAsFixed(0)}%')),
+              SizedBox(
+                  height: 20,
+                  child: MetricBar(
+                      ratio: process.disk.busy.toDouble(),
+                      text:
+                          'Disk busy ${(process.disk.busy * 100).toStringAsFixed(0)}%')),
+              Text('Tx:${process.network.mbpsSent.toStringAsFixed(1)}Mbps'),
+              Text('Rx:${process.network.mbpsReceived.toStringAsFixed(1)}Mbps'),
+            ],
+          ),
         ),
       ),
     );
@@ -83,13 +86,13 @@ class _LocalityScreenState extends State<LocalityScreen> {
     final machineExcluded = exclusions.isExcludedByMachineID(machineID);
     final excluded = machine?.excluded ?? machineExcluded;
     return Container(
-      margin: const EdgeInsets.all(5),
+      margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.black),
         color: excluded ? Colors.grey : null,
       ),
       child: Container(
-        margin: const EdgeInsets.all(5),
+        margin: const EdgeInsets.all(10),
         key: Key(machineID),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,6 +129,7 @@ class _LocalityScreenState extends State<LocalityScreen> {
               .toList()))
     ];
     return Container(
+      margin: const EdgeInsets.all(5),
       key: Key(zoneID),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.black),
@@ -141,13 +145,13 @@ class _LocalityScreenState extends State<LocalityScreen> {
               // show action menu
               PopupMenuButton(
                 itemBuilder: (context) => [
-                  PopupMenuItem(
-                    child: Text('Exclude'),
+                  const PopupMenuItem(
                     value: 'exclude',
+                    child: Text('Exclude'),
                   ),
-                  PopupMenuItem(
-                    child: Text('Include'),
+                  const PopupMenuItem(
                     value: 'include',
+                    child: Text('Include'),
                   ),
                 ],
                 onSelected: (value) {
@@ -182,42 +186,45 @@ class _LocalityScreenState extends State<LocalityScreen> {
           }
           final zones = locality.zones();
 
-          return Column(
-            children: [
-              // configurator
-              SizedBox(
-                height: 25,
-                child: Row(
-                  children: [
-                    // processes per machine dropdown
-                    const Text('Processes per machine:'),
-                    DropdownButton<int>(
-                      value: machinesPerRow,
-                      items: [1, 2, 3, 4, 5]
-                          .map((e) => DropdownMenuItem(
-                              value: e, child: Text(e.toString())))
-                          .toList(),
-                      onChanged: (value) {
-                        SharedPreferences.getInstance().then((prefs) {
-                          prefs.setInt(processPerMachineKey, value!);
-                        });
-                        setState(() {
-                          machinesPerRow = value!;
-                        });
-                      },
-                    ),
-                  ],
+          return Container(
+            margin: const EdgeInsets.all(10),
+            child: Column(
+              children: [
+                // configurator
+                SizedBox(
+                  height: 35,
+                  child: Row(
+                    children: [
+                      // processes per machine dropdown
+                      const Text('Processes per machine: '),
+                      DropdownButton<int>(
+                        value: machinesPerRow,
+                        items: [1, 2, 3, 4, 5]
+                            .map((e) => DropdownMenuItem(
+                                value: e, child: Text("$e")))
+                            .toList(),
+                        onChanged: (value) {
+                          SharedPreferences.getInstance().then((prefs) {
+                            prefs.setInt(processPerMachineKey, value!);
+                          });
+                          setState(() {
+                            machinesPerRow = value!;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              // main list
-              Expanded(
-                child: ListView(
-                    children: zones.entries
-                        .map(
-                            (e) => zoneWidget(status, locality, e.key, e.value))
-                        .toList()),
-              ),
-            ],
+                // main list
+                Expanded(
+                  child: ListView(
+                      children: zones.entries
+                          .map(
+                              (e) => zoneWidget(status, locality, e.key, e.value))
+                          .toList()),
+                ),
+              ],
+            ),
           );
         });
   }
