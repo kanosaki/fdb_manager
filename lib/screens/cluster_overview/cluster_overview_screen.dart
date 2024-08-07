@@ -43,17 +43,6 @@ class _ClusterOverviewState extends State<ClusterOverview> {
                 .toString()),
           ],
         ),
-        // Row(
-        //   crossAxisAlignment: CrossAxisAlignment.start,
-        //   children: [
-        //     Expanded(
-        //       child: Padding(padding: EdgeInsets.all(4), child: SizedBox(height: 20, child: MetricBar(
-        //         text: 'TotalKV: ${numToBytesStr(totalKVSize ?? 0)} / TotalDisk: ${numToBytesStr(totalDiskUsed ?? 0)}',
-        //         ratio: ,
-        //       ))),
-        //     ),
-        //   ],
-        // ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

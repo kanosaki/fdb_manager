@@ -52,7 +52,7 @@ class _LocalityScreenState extends State<LocalityScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(process.address),
-              RoleTag(process.roles, grouped: false, darkened: excluded),
+              RoleTag(process.roleNames, grouped: false, darkened: excluded),
               SizedBox(
                   height: 20,
                   child: MetricBar(
