@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 
 import '../../agent_api.dart';
 import '../charts/format.dart';
@@ -8,8 +7,8 @@ import '../charts/time_series.dart';
 
 class CPUUsageChart extends TimeSeriesChartBase {
   CPUUsageChart(this.processID,
-      {Key? key, charts.LayoutConfig? layout, Duration? span, bool? showLegend})
-      : super(key: key, layout: layout, span: span, showLegend: showLegend);
+      {Key? key, /*charts.LayoutConfig? layout,*/ Duration? span, bool? showLegend})
+      : super(key: key,/* layout: layout, */span: span, showLegend: showLegend);
 
   final String processID;
 
@@ -29,8 +28,8 @@ class CPUUsageChart extends TimeSeriesChartBase {
 
 class LoopBusyChart extends TimeSeriesChartBase {
   LoopBusyChart(this.processID,
-      {Key? key, charts.LayoutConfig? layout, Duration? span, bool? showLegend})
-      : super(key: key, layout: layout, span: span, showLegend: showLegend);
+      {Key? key, /*charts.LayoutConfig? layout, */Duration? span, bool? showLegend})
+      : super(key: key, /*layout: layout, */span: span, showLegend: showLegend);
 
   final String processID;
 
@@ -49,8 +48,8 @@ class LoopBusyChart extends TimeSeriesChartBase {
 
 class MemoryUsageChart extends TimeSeriesChartBase {
   MemoryUsageChart(this.processID,
-      {Key? key, charts.LayoutConfig? layout, Duration? span, bool? showLegend})
-      : super(key: key, layout: layout, span: span, showLegend: showLegend);
+      {Key? key, /*charts.LayoutConfig? layout, */Duration? span, bool? showLegend})
+      : super(key: key,/* layout: layout,*/ span: span, showLegend: showLegend);
 
   final String processID;
 
@@ -67,21 +66,21 @@ class MemoryUsageChart extends TimeSeriesChartBase {
     ];
   }
 
-  @override
-  charts.NumericAxisSpec? primaryAxisSpec(
-      BuildContext context, charts.Color? preferredColor, num? max) {
-    return dynamicLabelAxisSpec(
-      context,
-      preferredColor,
-      formatCapacity(max),
-    );
-  }
+  // @override
+  // charts.NumericAxisSpec? primaryAxisSpec(
+  //     BuildContext context, charts.Color? preferredColor, num? max) {
+  //   return dynamicLabelAxisSpec(
+  //     context,
+  //     preferredColor,
+  //     formatCapacity(max),
+  //   );
+  // }
 }
 
 class DiskBusyChart extends TimeSeriesChartBase {
   DiskBusyChart(this.processID,
-      {Key? key, charts.LayoutConfig? layout, Duration? span, bool? showLegend})
-      : super(key: key, layout: layout, span: span, showLegend: showLegend);
+      {Key? key,/* charts.LayoutConfig? layout, */Duration? span, bool? showLegend})
+      : super(key: key, /*layout: layout, */span: span, showLegend: showLegend);
 
   final String processID;
 
@@ -101,8 +100,8 @@ class DiskBusyChart extends TimeSeriesChartBase {
 
 class DiskUsageChart extends TimeSeriesChartBase {
   DiskUsageChart(this.processID,
-      {Key? key, charts.LayoutConfig? layout, Duration? span, bool? showLegend})
-      : super(key: key, layout: layout, span: span, showLegend: showLegend);
+      {Key? key, /*charts.LayoutConfig? layout,*/ Duration? span, bool? showLegend})
+      : super(key: key, /*layout: layout,*/ span: span, showLegend: showLegend);
 
   final String processID;
 
@@ -131,23 +130,23 @@ class DiskUsageChart extends TimeSeriesChartBase {
 
 class NetworkUsageChart extends TimeSeriesChartBase {
   NetworkUsageChart(this.processID,
-      {Key? key, charts.LayoutConfig? layout, Duration? span, bool? showLegend})
+      {Key? key, /*charts.LayoutConfig? layout,*/ Duration? span, bool? showLegend})
       : super(
           key: key,
-          layout: layout,
+          // layout: layout,
           span: span,
           showLegend: showLegend,
         );
 
-  @override
-  charts.NumericAxisSpec? primaryAxisSpec(
-      BuildContext context, charts.Color? preferredColor, num? max) {
-    return dynamicLabelAxisSpec(
-        context,
-        preferredColor,
-        formatterBaseFn(max, ['M', 'G', 'T', 'P'],
-            unit: 'bps', base: 1000));
-  }
+  // @override
+  // charts.NumericAxisSpec? primaryAxisSpec(
+  //     BuildContext context, charts.Color? preferredColor, num? max) {
+  //   return dynamicLabelAxisSpec(
+  //       context,
+  //       preferredColor,
+  //       formatterBaseFn(max, ['M', 'G', 'T', 'P'],
+  //           unit: 'bps', base: 1000));
+  // }
 
   final String processID;
 

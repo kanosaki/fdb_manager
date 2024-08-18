@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:fdb_manager/components/metric_bar.dart';
 import 'package:fdb_manager/data/status_history.dart';
 import 'package:fdb_manager/models/link.dart';
@@ -65,12 +64,12 @@ class _HeadlineState extends State<Headline> {
                 child: SizedBox(
                     width: 100,
                     child: ReadWriteRateChart(
-                      layout: charts.LayoutConfig(
-                        topMarginSpec: charts.MarginSpec.fixedPixel(10),
-                        bottomMarginSpec: charts.MarginSpec.fixedPixel(10),
-                        leftMarginSpec: charts.MarginSpec.fixedPixel(5),
-                        rightMarginSpec: charts.MarginSpec.fixedPixel(5),
-                      ),
+                      // layout: charts.LayoutConfig(
+                      //   topMarginSpec: charts.MarginSpec.fixedPixel(10),
+                      //   bottomMarginSpec: charts.MarginSpec.fixedPixel(10),
+                      //   leftMarginSpec: charts.MarginSpec.fixedPixel(5),
+                      //   rightMarginSpec: charts.MarginSpec.fixedPixel(5),
+                      // ),
                     )),
               ),
               Padding(
@@ -109,46 +108,46 @@ class _HeadlineState extends State<Headline> {
 
 class ReadWriteRateChart extends TimeSeriesChartBase {
   ReadWriteRateChart(
-      {Key? key, charts.LayoutConfig? layout, Duration? span, bool? showLegend})
+      {Key? key, /*charts.LayoutConfig? layout,*/ Duration? span, bool? showLegend})
       : super(
           key: key,
-          layout: layout,
+          // layout: layout,
           span: span,
           showLegend: showLegend,
         );
 
-  @override
-  charts.NumericAxisSpec? primaryAxisSpec(
-      BuildContext context, charts.Color? preferredColor, num? max) {
-    return charts.NumericAxisSpec(
-      tickProviderSpec: const charts.BasicNumericTickProviderSpec(
-          dataIsInWholeNumbers: false),
-      tickFormatterSpec: charts.BasicNumericTickFormatterSpec((measure) => ''),
-      renderSpec: charts.GridlineRendererSpec(
-        lineStyle: charts.LineStyleSpec(color: preferredColor),
-        labelStyle: charts.TextStyleSpec(
-          fontSize: baseFontSize(),
-          color: preferredColor,
-        ),
-      ),
-    );
-  }
+  // @override
+  // charts.NumericAxisSpec? primaryAxisSpec(
+  //     BuildContext context, charts.Color? preferredColor, num? max) {
+  //   return charts.NumericAxisSpec(
+  //     tickProviderSpec: const charts.BasicNumericTickProviderSpec(
+  //         dataIsInWholeNumbers: false),
+  //     tickFormatterSpec: charts.BasicNumericTickFormatterSpec((measure) => ''),
+  //     renderSpec: charts.GridlineRendererSpec(
+  //       lineStyle: charts.LineStyleSpec(color: preferredColor),
+  //       labelStyle: charts.TextStyleSpec(
+  //         fontSize: baseFontSize(),
+  //         color: preferredColor,
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  @override
-  charts.AxisSpec? domainAxisSpec(
-      BuildContext context, charts.Color? preferredColor) {
-    return charts.DateTimeAxisSpec(
-      tickFormatterSpec:
-          charts.BasicDateTimeTickFormatterSpec((datetime) => ''),
-      renderSpec: charts.GridlineRendererSpec(
-        lineStyle: charts.LineStyleSpec(color: preferredColor),
-        labelStyle: charts.TextStyleSpec(
-          fontSize: baseFontSize(),
-          color: preferredColor,
-        ),
-      ),
-    );
-  }
+  // @override
+  // charts.AxisSpec? domainAxisSpec(
+  //     BuildContext context, charts.Color? preferredColor) {
+  //   return charts.DateTimeAxisSpec(
+  //     tickFormatterSpec:
+  //         charts.BasicDateTimeTickFormatterSpec((datetime) => ''),
+  //     renderSpec: charts.GridlineRendererSpec(
+  //       lineStyle: charts.LineStyleSpec(color: preferredColor),
+  //       labelStyle: charts.TextStyleSpec(
+  //         fontSize: baseFontSize(),
+  //         color: preferredColor,
+  //       ),
+  //     ),
+  //   );
+  // }
 
   @override
   Iterable<ChartSeries> series() {

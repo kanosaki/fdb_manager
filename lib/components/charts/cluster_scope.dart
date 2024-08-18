@@ -1,25 +1,24 @@
 import 'package:fdb_manager/components/charts/format.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 
 import '../../agent_api.dart';
 import 'time_series.dart';
 
 class LatencyProbeChart extends TimeSeriesChartBase {
   LatencyProbeChart(
-      {Key? key, charts.LayoutConfig? layout, Duration? span, bool? showLegend})
-      : super(key: key, layout: layout, span: span, showLegend: showLegend);
+      {Key? key,/* charts.LayoutConfig? layout,*/ Duration? span, bool? showLegend})
+      : super(key: key, /*layout: layout,*/ span: span, showLegend: showLegend);
 
-  @override
-  charts.NumericAxisSpec? primaryAxisSpec(
-      BuildContext context, charts.Color? preferredColor, num? max) {
-    return dynamicLabelAxisSpec(
-      context,
-      preferredColor,
-      formatDurationSeconds(max),
-    );
-  }
+  // @override
+  // charts.NumericAxisSpec? primaryAxisSpec(
+  //     BuildContext context, charts.Color? preferredColor, num? max) {
+  //   return dynamicLabelAxisSpec(
+  //     context,
+  //     preferredColor,
+  //     formatDurationSeconds(max),
+  //   );
+  // }
 
   @override
   Iterable<ChartSeries> series() {
@@ -45,23 +44,23 @@ class LatencyProbeChart extends TimeSeriesChartBase {
 
 class ReadWriteRateChart extends TimeSeriesChartBase {
   ReadWriteRateChart(
-      {Key? key, charts.LayoutConfig? layout, Duration? span, bool? showLegend})
+      {Key? key, /*charts.LayoutConfig? layout, */Duration? span, bool? showLegend})
       : super(
           key: key,
-          layout: layout,
+          // layout: layout,
           span: span,
           showLegend: showLegend,
         );
 
-  @override
-  charts.NumericAxisSpec? primaryAxisSpec(
-      BuildContext context, charts.Color? preferredColor, num? max) {
-    return dynamicLabelAxisSpec(
-        context,
-        preferredColor,
-        formatterBaseFn(max, ['', 'Ki', 'Mi', 'Gi', 'Ti'],
-            unit: 'B/s', base: 1024));
-  }
+  // @override
+  // charts.NumericAxisSpec? primaryAxisSpec(
+  //     BuildContext context, charts.Color? preferredColor, num? max) {
+  //   return dynamicLabelAxisSpec(
+  //       context,
+  //       preferredColor,
+  //       formatterBaseFn(max, ['', 'Ki', 'Mi', 'Gi', 'Ti'],
+  //           unit: 'B/s', base: 1024));
+  // }
 
   @override
   Iterable<ChartSeries> series() {
@@ -86,20 +85,19 @@ class ReadWriteRateChart extends TimeSeriesChartBase {
 
 class TransactionRateChart extends TimeSeriesChartBase {
   TransactionRateChart(
-      {Key? key, charts.LayoutConfig? layout, Duration? span, bool? showLegend})
+      {Key? key,/* charts.LayoutConfig? layout,*/ Duration? span, bool? showLegend})
       : super(
           key: key,
-          layout: layout,
+          // layout: layout,
           span: span,
           showLegend: showLegend,
         );
 
-  @override
-  charts.NumericAxisSpec? primaryAxisSpec(
-      BuildContext context, charts.Color? preferredColor, num? max) {
-    return dynamicLabelAxisSpec(context, preferredColor,
-        formatterBaseFn(max, ['', 'K', 'M', 'G', 'T'], unit: 'Hz', base: 1000));
-  }
+  // @override charts.NumericAxisSpec? primaryAxisSpec(
+  //     BuildContext context, charts.Color? preferredColor, num? max) {
+  //   return dynamicLabelAxisSpec(context, preferredColor,
+  //       formatterBaseFn(max, ['', 'K', 'M', 'G', 'T'], unit: 'Hz', base: 1000));
+  // }
 
   @override
   Iterable<ChartSeries> series() {
@@ -124,20 +122,20 @@ class TransactionRateChart extends TimeSeriesChartBase {
 
 class QoSStateChart extends TimeSeriesChartBase {
   QoSStateChart(
-      {Key? key, charts.LayoutConfig? layout, Duration? span, bool? showLegend})
+      {Key? key, /*charts.LayoutConfig? layout,*/ Duration? span, bool? showLegend})
       : super(
           key: key,
-          layout: layout,
+          // layout: layout,
           span: span,
           showLegend: showLegend,
         );
 
-  @override
-  charts.NumericAxisSpec? primaryAxisSpec(
-      BuildContext context, charts.Color? preferredColor, num? max) {
-    return dynamicLabelAxisSpec(context, preferredColor,
-        formatterBaseFn(max, ['', 'K', 'M', 'G', 'T'], unit: 'Hz', base: 1000));
-  }
+  // @override
+  // charts.NumericAxisSpec? primaryAxisSpec(
+  //     BuildContext context, charts.Color? preferredColor, num? max) {
+  //   return dynamicLabelAxisSpec(context, preferredColor,
+  //       formatterBaseFn(max, ['', 'K', 'M', 'G', 'T'], unit: 'Hz', base: 1000));
+  // }
 
   @override
   Iterable<ChartSeries> series() {
@@ -153,18 +151,18 @@ class QoSStateChart extends TimeSeriesChartBase {
 
 class MovingDataChart extends TimeSeriesChartBase {
   MovingDataChart(
-      {Key? key, charts.LayoutConfig? layout, Duration? span, bool? showLegend})
-      : super(key: key, layout: layout, span: span, showLegend: showLegend);
+      {Key? key, /*charts.LayoutConfig? layout,*/ Duration? span, bool? showLegend})
+      : super(key: key, /*layout: layout,*/ span: span, showLegend: showLegend);
 
-  @override
-  charts.NumericAxisSpec? primaryAxisSpec(
-      BuildContext context, charts.Color? preferredColor, num? max) {
-    return dynamicLabelAxisSpec(
-      context,
-      preferredColor,
-      formatCapacity(max),
-    );
-  }
+  // @override
+  // charts.NumericAxisSpec? primaryAxisSpec(
+  //     BuildContext context, charts.Color? preferredColor, num? max) {
+  //   return dynamicLabelAxisSpec(
+  //     context,
+  //     preferredColor,
+  //     formatCapacity(max),
+  //   );
+  // }
 
   @override
   Iterable<ChartSeries> series() {
@@ -187,20 +185,20 @@ class MovingDataChart extends TimeSeriesChartBase {
 
 class LagChart extends TimeSeriesChartBase {
   LagChart(
-      {Key? key, charts.LayoutConfig? layout, Duration? span, bool? showLegend})
-      : super(key: key, layout: layout, span: span, showLegend: showLegend);
+      {Key? key, /*charts.LayoutConfig? layout,*/ Duration? span, bool? showLegend})
+      : super(key: key, /*layout: layout,*/ span: span, showLegend: showLegend);
   var _enableDCLag = false;
 
-  @override
-  charts.NumericAxisSpec? primaryAxisSpec(
-      BuildContext context, charts.Color? preferredColor, num? max) {
-    return dynamicLabelAxisSpec(
-      context,
-      preferredColor,
-      formatDurationSeconds(max),
-    );
-  }
-
+  // @override
+  // charts.NumericAxisSpec? primaryAxisSpec(
+  //     BuildContext context, charts.Color? preferredColor, num? max) {
+  //   return dynamicLabelAxisSpec(
+  //     context,
+  //     preferredColor,
+  //     formatDurationSeconds(max),
+  //   );
+  // }
+  //
   @override
   Widget build(BuildContext context) {
     final history = context.read<InstantStatusProvider>().history;

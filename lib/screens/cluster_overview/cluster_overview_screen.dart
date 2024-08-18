@@ -62,14 +62,14 @@ class _ClusterOverviewState extends State<ClusterOverview> {
           Expanded(
             flex: 1,
             child: Column(children: [
-              Text('Latency Probe', style: theme.textTheme.subtitle1),
+              Text('Latency Probe', style: theme.textTheme.titleSmall),
               SizedBox(height: 100, child: LatencyProbeChart(showLegend: true)),
             ]),
           ),
           Expanded(
             flex: 1,
             child: Column(children: [
-              Text('Read/Write rate', style: theme.textTheme.subtitle1),
+              Text('Read/Write rate', style: theme.textTheme.titleSmall),
               SizedBox(
                   height: 100, child: ReadWriteRateChart(showLegend: true)),
             ]),
@@ -79,7 +79,7 @@ class _ClusterOverviewState extends State<ClusterOverview> {
           Expanded(
             flex: 1,
             child: Column(children: [
-              Text('Transaction', style: theme.textTheme.subtitle1),
+              Text('Transaction', style: theme.textTheme.titleSmall),
               SizedBox(
                   height: 100, child: TransactionRateChart(showLegend: true)),
             ]),
@@ -87,7 +87,7 @@ class _ClusterOverviewState extends State<ClusterOverview> {
           Expanded(
             flex: 1,
             child: Column(children: [
-              Text('QoS', style: theme.textTheme.subtitle1),
+              Text('QoS', style: theme.textTheme.titleSmall),
               SizedBox(height: 100, child: QoSStateChart(showLegend: true)),
             ]),
           ),
@@ -96,14 +96,14 @@ class _ClusterOverviewState extends State<ClusterOverview> {
           Expanded(
             flex: 1,
             child: Column(children: [
-              Text('DC lag', style: theme.textTheme.subtitle1),
+              Text('DC lag', style: theme.textTheme.titleSmall),
               SizedBox(height: 100, child: LagChart(showLegend: true)),
             ]),
           ),
           Expanded(
             flex: 1,
             child: Column(children: [
-              Text('Moving data', style: theme.textTheme.subtitle1),
+              Text('Moving data', style: theme.textTheme.titleSmall),
               SizedBox(height: 100, child: MovingDataChart(showLegend: true)),
             ]),
           ),

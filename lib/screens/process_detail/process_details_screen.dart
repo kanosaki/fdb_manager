@@ -4,7 +4,6 @@ import 'package:fdb_manager/screens/process_detail/components/role_proxy.dart';
 import 'package:fdb_manager/screens/process_detail/components/role_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 
 import '../../agent_api.dart';
 import 'components/role_log.dart';
@@ -43,7 +42,7 @@ class _ProcessDetailsScreenState extends State<ProcessDetailsScreen> {
               Expanded(
                   flex: 1,
                   child: Column(children: [
-                    Text('CPU', style: theme.textTheme.subtitle1),
+                    Text('CPU', style: theme.textTheme.titleSmall),
                     SizedBox(
                         height: 80,
                         child: CPUUsageChart(
@@ -54,7 +53,7 @@ class _ProcessDetailsScreenState extends State<ProcessDetailsScreen> {
               Expanded(
                   flex: 1,
                   child: Column(children: [
-                    Text('Memory', style: theme.textTheme.subtitle1),
+                    Text('Memory', style: theme.textTheme.titleSmall),
                     SizedBox(
                         height: 80,
                         child: MemoryUsageChart(
@@ -67,7 +66,7 @@ class _ProcessDetailsScreenState extends State<ProcessDetailsScreen> {
               Expanded(
                   flex: 1,
                   child: Column(children: [
-                    Text('Disk', style: theme.textTheme.subtitle1),
+                    Text('Disk', style: theme.textTheme.titleSmall),
                     SizedBox(
                         height: 80,
                         child: DiskUsageChart(
@@ -78,7 +77,7 @@ class _ProcessDetailsScreenState extends State<ProcessDetailsScreen> {
               Expanded(
                   flex: 1,
                   child: Column(children: [
-                    Text('Network', style: theme.textTheme.subtitle1),
+                    Text('Network', style: theme.textTheme.titleSmall),
                     SizedBox(
                         height: 80,
                         child: NetworkUsageChart(
@@ -95,21 +94,21 @@ class _ProcessDetailsScreenState extends State<ProcessDetailsScreen> {
               case 'storage':
                 children.add(Text(
                   'Storage',
-                  style: theme.textTheme.subtitle1,
+                  style: theme.textTheme.titleSmall,
                 ));
                 children.add(StorageRole(role));
                 break;
               case 'log':
                 children.add(Text(
                   'Log',
-                  style: theme.textTheme.subtitle1,
+                  style: theme.textTheme.titleSmall,
                 ));
                 children.add(LogRole(role));
                 break;
               case 'proxy':
                 children.add(Text(
                   'Proxy',
-                  style: theme.textTheme.subtitle1,
+                  style: theme.textTheme.titleSmall,
                 ));
                 children.add(ProxyRole(processId, role));
                 break;

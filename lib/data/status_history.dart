@@ -1,5 +1,4 @@
 import 'package:sqflite/sqflite.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 
 import '../models/status.dart';
 
@@ -39,7 +38,7 @@ class StatusHistory {
 
   HistoryEntry? get latest => _latest;
 
-  charts.Series<dynamic, DateTime> series(
+  List<HistorySeriesEntry> series(
       String id, DateTime timestamp, Duration length, List<String> path) {
     var timestampFrom = timestamp.subtract(length);
     var beginIndex =
@@ -47,19 +46,12 @@ class StatusHistory {
     var endIndex =
         _history.lastIndexWhere((e) => e.timestamp.isBefore(timestamp));
 
-    final data = beginIndex < 0 || endIndex < 0
+    return beginIndex < 0 || endIndex < 0
         ? []
         : _history
             .getRange(beginIndex, endIndex)
             .map((e) => HistorySeriesEntry(e.timestamp, selectByPath(e, path)))
             .toList();
-
-    return charts.Series(
-      id: id,
-      data: data,
-      domainFn: (he, _) => he.timestamp,
-      measureFn: (he, _) => he.data,
-    );
   }
 
   List<dynamic> query(DateTime timestamp, Duration length, List<String> path) {
