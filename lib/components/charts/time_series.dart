@@ -2,6 +2,7 @@ import 'package:fdb_manager/data/status_history.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'dart:math' as math;
 
 import '../../agent_api.dart';
 
@@ -112,10 +113,12 @@ abstract class TimeSeriesChartBase extends StatelessWidget {
     });
 
     final bottomTitleWidget = (double value, TitleMeta meta) {
+      final t = startTime
+          .add(Duration(milliseconds: (value * _span.inMilliseconds).toInt()));
       return SideTitleWidget(
         axisSide: meta.axisSide,
         child: Text(
-          meta.formattedValue,
+          "${t.hour}:${t.minute}:${t.second}",
           style: TextStyle(fontSize: 8),
         ),
       );
@@ -131,6 +134,57 @@ abstract class TimeSeriesChartBase extends StatelessWidget {
       );
     };
 
+    final titlesData = _showLegend
+        ? FlTitlesData(
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                reservedSize: 50,
+                showTitles: true,
+                getTitlesWidget: leftTitleWidget,
+                interval: max != null ? math.max(max / 3, 1.0) : null,
+              ),
+            ),
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: bottomTitleWidget,
+                interval: 0.5,
+              ),
+            ),
+            topTitles: const AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: false,
+              ),
+            ),
+            rightTitles: const AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: false,
+              ),
+            ),
+          )
+        : const FlTitlesData(
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: false,
+              ),
+            ),
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: false,
+              ),
+            ),
+            topTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: false,
+              ),
+            ),
+            rightTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: false,
+              ),
+            ),
+          );
+
     // List<charts.ChartBehavior<DateTime>>? behaviors = [];
     // if (_showLegend) {
     //   behaviors.add(charts.SeriesLegend(
@@ -142,63 +196,21 @@ abstract class TimeSeriesChartBase extends StatelessWidget {
       lineBarsData: histories.map((lst) {
         return LineChartBarData(
             dotData: const FlDotData(show: false),
-            spots: lst.map((e) {
+            spots: lst.where((e) => e.data != null).map((e) {
               final x = e.timestamp.difference(startTime).inMilliseconds /
                   _span.inMilliseconds;
-              final y = e.data == null ? 0.0 : e.data.toDouble();
-              return FlSpot(x, y);
+              return FlSpot(x, e.data!.toDouble());
             }).toList());
       }).toList(),
       maxY: max?.toDouble(),
-      titlesData: FlTitlesData(
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            getTitlesWidget: leftTitleWidget,
-          ),
-        ),
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            getTitlesWidget: bottomTitleWidget,
-          ),
-        ),
-        topTitles: const AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: false,
-          ),
-        ),
-        rightTitles: const AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: false,
-          ),
-        ),
-      ),
-      // titlesData: FlTitlesData(
-      //   bottomTitles: AxisTitles(
-      //     sideTitles: SideTitles(
-      //       // render
-      //       showTitles: true,
-      //       interval: 1, // TODO
-      //       getTitlesWidget: bottomTitleWidget,
-      //     ),
-      //   ),
-      //   leftTitles: AxisTitles(
-      //     sideTitles: SideTitles(
-      //       showTitles: true,
-      //       getTitlesWidget: leftTitleWidget,
-      //       interval: 1,
-      //       reservedSize: 36,
-      //     ),
-      //   ),
-      // ),
+      titlesData: titlesData,
       borderData: FlBorderData(
         show: false,
       ),
     );
-    final theme = Theme.of(context);
-    final themeColor = theme.textTheme.bodyMedium?.color ??
-        const Color.fromRGBO(128, 128, 128, 1);
+    // final theme = Theme.of(context);
+    // final themeColor = theme.textTheme.bodyMedium?.color ??
+    //     const Color.fromRGBO(128, 128, 128, 1);
     // final preferredColor = charts.Color(
     //     r: themeColor.red,
     //     g: themeColor.green,
@@ -213,7 +225,7 @@ abstract class TimeSeriesChartBase extends StatelessWidget {
     //   domainAxis: domainAxisSpec(context, preferredColor),
     // );
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 3.0),
+      margin: const EdgeInsets.all(5.0),
       child: LineChart(
         chartData,
         duration: const Duration(milliseconds: 0),
